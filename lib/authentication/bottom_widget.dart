@@ -62,7 +62,19 @@ class BottomWidget extends StatelessWidget {
                 onTap: (){
                   loadingProvider.setErrorMessage(false);
                   loadingProvider.setLoading(false);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
+                  Navigator.push(context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) => SignUpPage(),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        var curve = Curves.fastOutSlowIn;
+
+                        return FadeTransition(
+                          opacity: animation.drive(CurveTween(curve: curve)),
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
                 },
                 child: Container(
                   width: 200.w,

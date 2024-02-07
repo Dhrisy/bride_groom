@@ -1,9 +1,16 @@
+import 'dart:async';
+
+import 'package:bride_groom/authentication/auth_service.dart';
 import 'package:bride_groom/authentication/entry_page.dart';
 import 'package:bride_groom/components/common_button.dart';
 import 'package:bride_groom/components/reusable_button.dart';
+import 'package:bride_groom/home_page/home_page.dart';
+import 'package:bride_groom/home_page/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../components/reusable_text_field.dart';
 import 'provider.dart';
@@ -17,7 +24,7 @@ class SignUpPage extends StatefulWidget {
   State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _SignUpPageState extends State<SignUpPage> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController name_textEditingController = TextEditingController();
@@ -27,10 +34,35 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController phn_textEditingController = TextEditingController();
 
   String selectedGender = 'Select';
-  String? userSelectedGendr;
+  String userSelectedGendr = 'Select';
 
   bool isLoading = false;
   bool error_message = false;
+
+
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
+  bool _animationFinished = false;
+
+  bool _fadeOut = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+  }
+
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+
+    super.dispose();
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +82,32 @@ class _SignUpPageState extends State<SignUpPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(
+                          width: 15.w,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 15.w,
+                            ),
+                            InkWell(
+                              onTap: () {
+                                _clearFileds();
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => EntryPage()));
+                                print('mmmm${userSelectedGendr}');
+                              },
+                              child: Icon(
+                                Icons.close,
+                                size: 35.sp,
+                              ),
+                            )
+                          ],
+                        ),
                         SizedBox(
                           height: 5.h,
                         ),
@@ -74,6 +132,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 hint_text: 'Enter your email address',
                                 controller: email_textEditingController,
                                 icon: Icon(Icons.email),
+                                email: true,
                               ),
                               SizedBox(
                                 height: 10.h,
@@ -90,6 +149,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 hint_text: 'Enter your password',
                                 controller: pw_textEditingController,
                                 icon: Icon(Icons.lock),
+                                password: true,
                               ),
                               SizedBox(
                                 height: 20.h,
@@ -105,10 +165,41 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                               CommonButton(
                                 callback: () async {
+                                  loadingPrvider.setLoading(true);
                                   if (_formKey.currentState!.validate()) {
                                     // Form is valid, proceed with your logic
                                     print('Form is valid');
                                     loadingPrvider.setErrorMessage(false);
+                                    // Get instance of AuthService using get_it
+                                    AuthSignUpService authService =
+                                        GetIt.I.get<AuthSignUpService>();
+
+                                    // Call the signUpWithEmailPassword method
+                                    String? error = await authService
+                                        .signUpWithEmailPassword(
+                                      email_textEditingController.text,
+                                      pw_textEditingController.text,
+                                    );
+                                    // Handle the sign-up result
+                                    if (error == null) {
+                                      print('jjjjiij${error}');
+                                      saveUserDataToSharedPreferences();
+                                      await Future.delayed(Duration(seconds: 2));
+                                      loadingPrvider.setLoading(false);
+
+                                      // _startFadeOutAnimation();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => HomePage(),
+                                        ),
+                                      );
+
+                                    } else {
+                                      print('jjjjj${error}');
+                                      // Sign-up failed, show error message
+                                      loadingPrvider.setLoading(true);
+                                    }
                                   } else {
                                     // Form is invalid
                                     print('Form is invalid');
@@ -121,6 +212,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                 borderColor: Colors.purple,
                                 title: 'Sign up',
                               ),
+
+
                             ],
                           ),
                         ),
@@ -135,6 +228,33 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
   }
+
+  void _clearFileds() {
+    email_textEditingController.clear();
+    pw_textEditingController.clear();
+    name_textEditingController.clear();
+    phn_textEditingController.clear();
+    userSelectedGendr = 'Select';
+  }
+
+  void _startFadeOutAnimation() {
+    setState(() {
+      _fadeOut = true;
+
+    });
+
+    Timer(Duration(seconds: 2), () {
+      // Navigate to another page after 2 seconds
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(),
+        ),
+      );
+      // Navigator.pop(context);
+    });
+  }
+
 
   _signUp_text(context) {
     return Row(
@@ -153,7 +273,9 @@ class _SignUpPageState extends State<SignUpPage> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        SizedBox(width: 10.w,),
+        SizedBox(
+          width: 10.w,
+        ),
         Text(
           'Please enter this field',
           style: TextStyle(
@@ -180,7 +302,10 @@ class _SignUpPageState extends State<SignUpPage> {
           Expanded(
             child: DropdownButton<String>(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              value: genderProvider.selectedGender,
+              value:
+                  (userSelectedGendr == 'Select' || userSelectedGendr == null)
+                      ? userSelectedGendr
+                      : genderProvider.selectedGender,
               onChanged: (String? newValue) {
                 genderProvider.setGender(newValue!);
                 userSelectedGendr = newValue;
@@ -203,6 +328,18 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-// ... (other methods remain unchanged)
+  Future<void> saveUserDataToSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Save user data to shared preferences
+    prefs.setString('name', name_textEditingController.text);
+    prefs.setString('email', email_textEditingController.text);
+    prefs.setString('phn', phn_textEditingController.text);
+
+    // Print shared preferences values
+    print('Name: ${prefs.getString('name')}');
+    print('Email: ${prefs.getString('email')}');
+    print('Phone Number: ${prefs.getString('phn')}');
+  }
 }
 
