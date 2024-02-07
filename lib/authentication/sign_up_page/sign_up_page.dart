@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import '../../components/reusable_text_field.dart';
 import 'provider.dart';
 
+// ... (imports remain unchanged)
+
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
 
@@ -16,6 +18,8 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  final _formKey = GlobalKey<FormState>();
+
   TextEditingController name_textEditingController = TextEditingController();
   TextEditingController email_textEditingController = TextEditingController();
   TextEditingController pw_textEditingController = TextEditingController();
@@ -36,27 +40,19 @@ class _SignUpPageState extends State<SignUpPage> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: Container(
-                height: MediaQuery.of(context).size.height - 50,
-                width: double.infinity,
-                child: Consumer<LoadingProvider>(
-                  builder: (context, loadingPrvider, child) {
-                    return Column(
+              height: MediaQuery.of(context).size.height - 50,
+              width: double.infinity,
+              child: Consumer<LoadingProvider>(
+                builder: (context, loadingPrvider, child) {
+                  return Form(
+                    key: _formKey,
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
                           height: 5.h,
                         ),
-                        // InkWell(
-                        //   onTap: (){
-                        //    try{
-                        //      Navigator.push(context, MaterialPageRoute(builder: (context) => EntryPage()));
-                        //      print('ppppp');
-                        //    }catch(e){
-                        //      print('ppppp$e');
-                        //    }
-                        //   },
-                        //     child: Icon(Icons.arrow_back_outlined)),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 40),
                           child: Column(
@@ -67,88 +63,73 @@ class _SignUpPageState extends State<SignUpPage> {
                                 height: 10.h,
                               ),
                               ReusabeTextField(
-                                  // text: 'Full name',
-                                  hint_text: 'Enter your name',
-                                  controller: name_textEditingController,
-                                  icon: Icon(Icons.person)),
-                              if (loadingPrvider.error_message)
-                                _errorText(context),
-
+                                hint_text: 'Enter your name',
+                                controller: name_textEditingController,
+                                icon: Icon(Icons.person),
+                              ),
                               SizedBox(
                                 height: 8.h,
                               ),
                               ReusabeTextField(
-                                  // text: 'Email',
-                                  hint_text: 'Enter your email address',
-                                  controller: email_textEditingController,
-                                  icon: Icon(Icons.email)),
-                              if (loadingPrvider.error_message) _errorText(context),
+                                hint_text: 'Enter your email address',
+                                controller: email_textEditingController,
+                                icon: Icon(Icons.email),
+                              ),
                               SizedBox(
                                 height: 10.h,
                               ),
                               ReusabeTextField(
-                                  // text: 'Password',
-                                  hint_text: 'Enter your phone number',
-                                  controller: phn_textEditingController,
-                                  icon: Icon(Icons.phone)),
-                              if (loadingPrvider.error_message) _errorText(context),
+                                hint_text: 'Enter your phone number',
+                                controller: phn_textEditingController,
+                                icon: Icon(Icons.phone),
+                              ),
                               SizedBox(
                                 height: 10.h,
                               ),
                               ReusabeTextField(
-                                  // text: 'Password',
-                                  hint_text: 'Enter your password',
-                                  controller: pw_textEditingController,
-                                  icon: Icon(Icons.lock)),
-                              if (loadingPrvider.error_message) _errorText(context),
+                                hint_text: 'Enter your password',
+                                controller: pw_textEditingController,
+                                icon: Icon(Icons.lock),
+                              ),
                               SizedBox(
                                 height: 20.h,
                               ),
                               _dropDownGender(context),
-                              if (loadingPrvider.error_message) _errorText(context),
+                              SizedBox(
+                                height: 5.h,
+                              ),
+                              if (loadingPrvider.error_message)
+                                _errorText(context),
                               SizedBox(
                                 height: 20.h,
                               ),
-                              // ReusableButton(
-                              //
-                              //     text: 'Sign up',
-                              //     sign_up: true,
-                              //     fullname: name_textEditingController.text,
-                              //     email: email_textEditingController.text,
-                              //     password: pw_textEditingController.text,
-                              //     gender: userSelectedGendr == null || userSelectedGendr == 'Select'
-                              //         ? 'Not selected'
-                              //         : userSelectedGendr.toString(),
-                              //   isLoading: isLoading,
-                              //   onPressed: _handleSignUp,
-                              // ),
                               CommonButton(
-                                  callback: () async {
-                                    if ((name_textEditingController.text.isEmpty) ||
-                                        (email_textEditingController.text.isEmpty) ||
-                                        (pw_textEditingController.text.isEmpty) ||
-                                        (userSelectedGendr == null)) {
-                                      // isLoading = true;
-                                      loadingPrvider.setLoading(false);
-                                      loadingPrvider.setErrorMessage(true);
-                                      // await  Future.delayed(Duration(seconds: 5));
-                                      //  loadingPrvider.setLoading(false, false);
-                                      print(
-                                          'kkkk${loadingPrvider.isLoading}, ${loadingPrvider.error_message}');
-                                    } else {}
-                                  },
-                                  width: double.infinity,
-                                  isLoading: loadingPrvider.isLoading,
-                                  fillColor: Colors.purple,
-                                  borderColor: Colors.purple,
-                                  title: 'Sign up'),
+                                callback: () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    // Form is valid, proceed with your logic
+                                    print('Form is valid');
+                                    loadingPrvider.setErrorMessage(false);
+                                  } else {
+                                    // Form is invalid
+                                    print('Form is invalid');
+                                    loadingPrvider.setErrorMessage(true);
+                                  }
+                                },
+                                width: double.infinity,
+                                isLoading: loadingPrvider.isLoading,
+                                fillColor: Colors.purple,
+                                borderColor: Colors.purple,
+                                title: 'Sign up',
+                              ),
                             ],
                           ),
                         ),
                       ],
-                    );
-                  },
-                )),
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
         ),
       ),
@@ -172,10 +153,11 @@ class _SignUpPageState extends State<SignUpPage> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        SizedBox(width: 10.w,),
         Text(
           'Please enter this field',
           style: TextStyle(
-              color: Colors.red,
+              color: Colors.red[900],
               fontSize: 12.sp,
               fontWeight: FontWeight.normal),
         )
@@ -220,4 +202,7 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
   }
+
+// ... (other methods remain unchanged)
 }
+
