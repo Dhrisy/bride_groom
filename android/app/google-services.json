@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "140442426794",
+    "project_id": "bridegroom-2581b",
+    "storage_bucket": "bridegroom-2581b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140442426794:android:eb39b1732a4f5b30661fd3",
+        "android_client_info": {
+          "package_name": "com.example.bride_groom"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaT97QRmoRHLhzuAYYvCWmFISxTVbwvvA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
