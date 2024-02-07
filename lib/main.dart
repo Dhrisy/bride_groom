@@ -2,6 +2,9 @@ import 'package:bride_groom/authentication/entry_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+
+import 'authentication/sign_up_page/provider.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,7 +13,15 @@ void main() async{
   } catch (e) {
     print('Firebase initialization error: $e');
   }
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => GenderProvider()),
+        ChangeNotifierProvider(create: (context) => LoadingProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 
 }
 

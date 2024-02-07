@@ -30,18 +30,18 @@ class _EntryPageState extends State<EntryPage> {
                   const SizedBox(
                     height: 15,
                   ),
+                  // Text(
+                  //   'WELCOME',
+                  //   style: TextStyle(
+                  //       fontSize: 28.sp,
+                  //       fontWeight: FontWeight.w800,
+                  //       color: Colors.black),
+                  // ),
                   Text(
-                    'WELCOME',
+                    'Find your perfect partner',
                     style: TextStyle(
-                        fontSize: 28.sp,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black),
-                  ),
-                  Text(
-                    'Find your perfect one',
-                    style: TextStyle(
-                        fontWeight: FontWeight.normal,
-                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20.sp,
                         color: Colors.black),
                   )
                 ],

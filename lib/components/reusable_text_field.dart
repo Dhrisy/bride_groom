@@ -33,29 +33,33 @@ class _ReusabeTextFieldState extends State<ReusabeTextField> {
             SizedBox(
               width: 5.h,
             ),
-            Text(
+            widget.text != null ? Text(
               widget.text.toString(),
               style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.normal,
               ),
-            ),
+            )
+                : SizedBox.shrink()
+
           ],
         ),
         SizedBox(
           height: 8.h,
         ),
-        TextField(
-            controller: widget.controller,
-            decoration: InputDecoration(
-              hintText: widget.hint_text,
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide.none),
-              fillColor: Colors.purple.withOpacity(0.1),
-              filled: true,
-              prefixIcon: widget.icon,
-            )),
+        TextFormField(
+          controller: widget.controller,
+
+          decoration: InputDecoration(
+            hintText: widget.hint_text,
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none),
+            fillColor: Colors.purple.withOpacity(0.1),
+            filled: true,
+            prefixIcon: widget.icon,
+          ),
+        ),
       ],
     );
   }
