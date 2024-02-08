@@ -20,6 +20,9 @@ class _OnFocusSearchAppBarState extends State<OnFocusSearchAppBar> {
         builder: (context, seachProvider, child) {
           return Row(
             children: [
+              SizedBox(
+                width: 5.w,
+              ),
               Expanded(
                 child: Container(
                   width: double.infinity,

@@ -30,11 +30,8 @@ class _VerifiedCredentialState extends State<VerifiedCredential>
 
 
   void fetUseData() async{
-    print('hhhhhh');
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     FirebaseServices _firebase_services = GetIt.I.get<FirebaseServices>();
     user_data = await _firebase_services.getUserDataByEmail(widget.email);
-    print('rrrrrrrrrrr${user_data}');
   }
 
   @override
@@ -55,9 +52,6 @@ class _VerifiedCredentialState extends State<VerifiedCredential>
     );
     _controller.forward();
 
-    print('kkk${user_data}');
-
-
     Timer(
       Duration(seconds: 3),
           () => Navigator.pushReplacement(
@@ -77,8 +71,6 @@ class _VerifiedCredentialState extends State<VerifiedCredential>
             ),
       ),
     );
-
-
   }
 
   @override

@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
           body: Container(
             margin: const EdgeInsets.all(24),
             child: Consumer<AppProvider>(
-              builder: (context, loadingProvider, child) {
+              builder: (context, provider, child) {
                 return SingleChildScrollView(
                   child: Form(
                     key: _formKey,
@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           height: 15.h,
                         ),
-                        if(loadingProvider.errorMessage == true)
+                        if(provider.errorMessage == true)
                           _errorText(context),
                         _forgotPassword(context),
                         CommonButton(
@@ -105,8 +105,8 @@ class _LoginPageState extends State<LoginPage> {
                             if (_formKey.currentState!.validate()) {
                               // Form is valid, proceed with your login logic
                               print('Form is valid');
-                              loadingProvider.setErrorMessage(false);
-                              loadingProvider.setLoading(true);
+                              provider.setErrorMessage(false);
+                              provider.setLoading(true);
                               AuthSignInService authService = GetIt.I.get<AuthSignInService>();
                               FirebaseServices _firebase_services = GetIt.I.get<FirebaseServices>();
 
@@ -118,11 +118,16 @@ class _LoginPageState extends State<LoginPage> {
                               if (error == null) {
                                 user_data = await _firebase_services.getUserDataByEmail(emailController.text);
                                 print('ccccc${user_data!['name']}');
+
+                                provider.setEmail(emailController.text);
+
+
+
                                 final full_name = toSentenceCase(user_data!['name']);
                                 Future.delayed(Duration(seconds: 2), () {
-                                  loadingProvider.setLoading(false);
+                                  provider.setLoading(false);
                                   saveUserDataToSharedPreferences();
-                                  loadingProvider.setErrorMessage(false);
+                                  provider.setErrorMessage(false);
                                 });
 
                             // Successful login, navigate to animated greeting page
@@ -137,18 +142,18 @@ class _LoginPageState extends State<LoginPage> {
                                 );
                               } else {
                                 Future.delayed(Duration(seconds: 2), () {
-                                  loadingProvider.setLoading(false);
-                                  loadingProvider.setErrorMessage(true);
+                                  provider.setLoading(false);
+                                  provider.setErrorMessage(true);
                                 });
                                 print('Login failed: $error');
                               }
                             } else {
                               // Form is invalid
                               print('Form is invalid');
-                              loadingProvider.setErrorMessage(false);
+                              provider.setErrorMessage(false);
                             }
                           },
-                          isLoading: loadingProvider.isLoading,
+                          isLoading: provider.isLoading,
                           width: double.infinity,
                           fillColor: Colors.purple,
                           borderColor: Colors.purple,

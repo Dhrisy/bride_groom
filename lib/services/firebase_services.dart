@@ -31,7 +31,6 @@ class FirebaseServices {
       QuerySnapshot querySnapshot = await _firestore
           .collection('users')
           .where('email', isEqualTo: email)
-          .limit(1)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {

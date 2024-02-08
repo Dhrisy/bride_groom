@@ -2,11 +2,22 @@ import 'package:flutter/material.dart';
 
 class AppProvider with ChangeNotifier {
   String _selectedGender = 'Select';
+  String _email = '';
+  String _phone = '';
+  String _name = '';
+  String _gender = '';
+
+
   bool _isLoading = false;
   bool _errorMessage = false;
   bool _isSearching = false;
 
   String get selectedGender => _selectedGender;
+  String get Email => _email;
+  String get Phone => _phone;
+  String get Name => _name;
+  String get Gender => _gender;
+
   bool get isLoading => _isLoading;
   bool get errorMessage => _errorMessage;
   bool get isSearching => _isSearching;
@@ -30,4 +41,24 @@ class AppProvider with ChangeNotifier {
     _isSearching = searching;
     notifyListeners();
   }
+
+  void setSelectedGender(String Gender) {
+    _gender = Gender;
+    notifyListeners();
+  }
+  void setEmail(String Email) {
+    _email = Email;
+    notifyListeners();
+  }
+  void setPhone(String Phone) {
+    _phone = Phone;
+    notifyListeners();
+  }
+  void setName(String Name) {
+    _name = Name;
+    notifyListeners();
+  }
+
+
+
 }

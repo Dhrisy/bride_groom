@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:bride_groom/authentication/entry_page.dart';
+import 'package:bride_groom/authentication/sign_up_page/provider.dart';
 import 'package:bride_groom/home_page/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/firebase_services.dart';
@@ -18,35 +20,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   late Animation<double> _animation;
 
   String? user_id;
-  String? email;
-
-
-  Future<String> getEmail() async{
-    String user_id;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    user_id = prefs.getString('user_id').toString();
-    email = prefs.getString('email').toString();
-    print('user_id: ${prefs.getString('user_id')}');
-    return user_id;
-  }
-
+  String email = '';
   Map<String, dynamic>? user_data;
 
 
-  void fetUseData() async{
-    print('hhhhhh');
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    FirebaseServices _firebase_services = GetIt.I.get<FirebaseServices>();
-    user_data = await _firebase_services.getUserDataByEmail(email.toString());
-    print('rrrrrrrrrrr${user_data}');
-  }
+
   @override
   void initState() {
     super.initState();
-    getEmail();
-    fetUseData();
-
-
+    // fetUseData();
+   _initialize();
     _controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: 2), // Adjust the duration as needed
@@ -60,16 +43,47 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
     _controller.forward();
 
-   if(user_id != null && user_id != ''){
-      print('nnnnnn${user_id == null}');
+
+
+  }
+
+  Future<String> getEmail() async{
+    try{
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      user_id = prefs.getString('user_id').toString();
+      final Email =   prefs.getString('email');
+      email = Email!;
+      setState(() {
+        email = Email;
+      });
+      print('user_id: ${prefs.getString('user_id')}');
+
+      return Email;
+    }catch(e){
+      print(e);
+      return '';
+    }
+  }
+
+  void fetUseData( String email) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    FirebaseServices _firebase_services = GetIt.I.get<FirebaseServices>();
+    user_data = await _firebase_services.getUserDataByEmail(email);
+  }
+
+  Future<void> _initialize() async {
+    await getEmail();
+    if (email != '') {
+      fetUseData(email);
       Timer(
         Duration(seconds: 4),
             () => Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage(
-            user_data: user_data,
-
-          )),
+          MaterialPageRoute(
+            builder: (context) => HomePage(
+              user_data: user_data,
+            ),
+          ),
         ),
       );
     } else {
@@ -82,11 +96,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       );
     }
 
+    // ... rest of your initState code
+  }
 
-    }
 
   @override
   Widget build(BuildContext context) {
+    AppProvider myProvider = Provider.of<AppProvider>(context);
+    print(myProvider.Email);
+
     return Scaffold(
       backgroundColor: Colors.purple, // Set your preferred background color
       body: Center(

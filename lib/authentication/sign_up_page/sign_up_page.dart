@@ -179,8 +179,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                   );
                                   // Handle the sign-up result
                                   if (error == null) {
-                                    print('jjjjiij${error}');
-                                    saveUserDataToSharedPreferences(user_id!);
+                                    print('aaaa');
+                                    saveUserDataToSharedPreferences();
                                     await Future.delayed(
                                         Duration(seconds: 2));
                                     loadingPrvider.setLoading(false);
@@ -195,6 +195,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                        gender: userSelectedGender,
                                      );
                                    }catch(e){
+
                                      print('Exception : $e');
                                    }
 
@@ -202,12 +203,12 @@ class _SignUpPageState extends State<SignUpPage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => GreetingPage(
+                                          name: name_textEditingController.text,
                                           email: email_textEditingController.text,
                                         ),
                                       ),
                                     );
                                   } else {
-                                    print('jjjjj${error}');
                                     Future.delayed(Duration(seconds: 2), () {
                                       loadingPrvider.setLoading(false);
                                       loadingPrvider.setErrorMessage(true);
@@ -352,7 +353,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   }
 
-  Future<void> saveUserDataToSharedPreferences(String user_id) async {
+  Future<void> saveUserDataToSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     // Save user data to shared preferences
@@ -360,7 +361,7 @@ class _SignUpPageState extends State<SignUpPage> {
     prefs.setString('email', email_textEditingController.text);
     prefs.setString('phone', phn_textEditingController.text);
     prefs.setString('password', pw_textEditingController.text);
-    prefs.setString('user_id', pw_textEditingController.text);
+    // prefs.setString('user_id', pw_textEditingController.text);
 
 
     // Print shared preferences values
@@ -368,7 +369,7 @@ class _SignUpPageState extends State<SignUpPage> {
     print('Email: ${prefs.getString('email')}');
     print('Phone Number: ${prefs.getString('phone')}');
     print('Password: ${prefs.getString('password')}');
-    print('UserId: ${prefs.getString('user_id')}');
+    // print('UserId: ${prefs.getString('user_id')}');
 
 
   }

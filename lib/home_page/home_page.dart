@@ -1,6 +1,7 @@
 import 'package:bride_groom/authentication/sign_up_page/provider.dart';
 import 'package:bride_groom/home_page/widgets/onfocus_search_appbar.dart';
 import 'package:bride_groom/home_page/widgets/profile_card_widget.dart';
+import 'package:bride_groom/profile/profile_widget.dart';
 import 'package:bride_groom/splash_screen/splashscreen_widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,16 +12,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/firebase_services.dart';
 
-
-
 class HomePage extends StatefulWidget {
-  HomePage({super.key,
-  required this.user_data,
+  HomePage({
+    super.key,
+    required this.user_data,
   });
 
   final Map<String, dynamic>? user_data;
-
-
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -30,34 +28,45 @@ class _HomePageState extends State<HomePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   Map<String, dynamic>? user_data;
 
-
-
   final List<String> maleImageNames = [
     'assets/images/m1.jpg',
+    'assets/images/m2.jpg',
     'assets/images/m3.jpg',
+    'assets/images/m4.jpg',
+    'assets/images/m5.jpg',
     // Add more male image names as needed
   ];
 
   final List<String> maleNames = [
     'John Doe',
     'Male User 2',
+    'Amal',
+    'Praveen',
+    'Sudhir',
     // Add more male names as needed
   ];
 
   final List<String> femaleImageNames = [
-    'assets/female_image1.jpg',
-    'assets/female_image2.jpg',
+    'assets/images/w1.jpg',
+    'assets/images/w2.jpg',
+    'assets/images/w3.jpg',
+    'assets/images/w4.jpg',
+    'assets/images/w5.jpg',
+
     // Add more female image names as needed
   ];
 
   final List<String> femaleNames = [
     'Jane Doe',
     'Female User 2',
+    'vbn',
+    'wertyu',
+    'sdfgh'
+
     // Add more female names as needed
   ];
 
-   String? userGender;
-
+  String? userGender;
 
   Future<void> toCheckGender() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -66,47 +75,38 @@ class _HomePageState extends State<HomePage> {
     print('Gender: ${prefs.getString('gender')}');
     userGender = prefs.getString('gender');
     print(userGender);
-
   }
-
-
-  void fetUseData() async{
-    print('hhhhhh');
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    FirebaseServices _firebase_services = GetIt.I.get<FirebaseServices>();
-     user_data = await _firebase_services.getUserDataByEmail(prefs.getString('email').toString());
-  }
-
-
-
 
   late List<String> imageNames;
   late List<String> names;
 
   @override
-void initState() {
-    // TODO: implement initState
+  void initState() {
     super.initState();
 
-    print(user_data);
+    print(widget.user_data);
     toCheckGender();
-    fetUseData();
 
-   if(user_data != null){
-     print('NNNNNN');
-     if (user_data!['gender'] == 'Bride') {
-       print('ITS BRIDE');
-       imageNames = maleImageNames;
-       names = maleNames;
-     } else {
-       print('ITS GROOM');
+    if (widget.user_data != null) {
+      user_data = widget.user_data; // Assign the value
+      print('NNNNNN');
 
-       imageNames = femaleImageNames;
-       names = femaleNames;
-     }
-   }else{
-     print('USER DATA IS NULL');
-   }
+      if (user_data!['gender'] == 'Bride') {
+        print('ITS BRIDE');
+        imageNames = maleImageNames;
+        names = maleNames;
+      } else {
+        print('ITS GROOM');
+
+        imageNames = femaleImageNames;
+        names = femaleNames;
+        // Debugging prints
+        print('Length of imageNames: ${imageNames.length}');
+        print('Length of names: ${names.length}');
+      }
+    } else {
+      print('USER DATA IS NULL');
+    }
   }
 
   Future<void> _signOut() async {
@@ -132,174 +132,140 @@ void initState() {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppProvider>(builder: (context, provider, child){
+    return Consumer<AppProvider>(builder: (context, provider, child) {
       return GestureDetector(
-        onTap: (){
+        onTap: () {
           print('kkkkkkk');
           FocusScope.of(context).unfocus();
           provider.setSearching(false);
         },
         child: Scaffold(
-          appBar: provider.isSearching == false? AppBar(
-            leadingWidth: 20,
-            iconTheme: IconThemeData(
-              color: Colors.purple,
+          appBar: provider.isSearching == false
+              ? AppBar(
+                  leadingWidth: 20,
+                  iconTheme: IconThemeData(
+                    color: Colors.purple,
+                  ),
 
-            ),
+                  toolbarHeight: 60.h,
+                  backgroundColor:
+                      Colors.white, //Colors.purple.withOpacity(0.1),
+                  centerTitle: true,
+                  title: Container(
+                    height: 60.h,
+                    // color: Colors.purple.withOpacity(0.1),
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 5.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InkWell(
+                            onTap: () async {
+                              // await _signOut();
+                              // clearSharedPreferences();
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ProfileWidget()));
 
-            toolbarHeight: 60.h,
-            backgroundColor: Colors.white,//Colors.purple.withOpacity(0.1),
-            centerTitle: true,
-            title: Container(
-              height: 60.h,
-              // color: Colors.purple.withOpacity(0.1),
-              child: Padding(
-                padding:  EdgeInsets.only(left: 5.w),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      onTap: ()async{
-                        await _signOut();
-                        clearSharedPreferences();
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => SplashScreen()));
-
-
-                        // provider.setSearching(true);
-                      },
-                      child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.purple.withOpacity(0.1), // Set the desired color
-                        ),
-                        child: Icon(Icons.person,
-                          color: Colors.purple,),
+                              // provider.setSearching(true);
+                            },
+                            child: Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.purple
+                                    .withOpacity(0.1), // Set the desired color
+                              ),
+                              child: Icon(
+                                Icons.person,
+                                color: Colors.purple,
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              provider.setSearching(true);
+                            },
+                            child: Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.purple
+                                    .withOpacity(0.1), // Set the desired color
+                              ),
+                              child: Icon(
+                                Icons.search,
+                                color: Colors.purple,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            'Find your Heart mate',
+                            style: TextStyle(fontSize: 16.sp),
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                  height: 40,
+                                  width: 40,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.purple.withOpacity(
+                                        0.1), // Set the desired color
+                                  ),
+                                  child: Icon(Icons.star_outlined)),
+                              SizedBox(
+                                width: 5.w,
+                              ),
+                              Container(
+                                  height: 40,
+                                  width: 40,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.purple.withOpacity(
+                                        0.1), // Set the desired color
+                                  ),
+                                  child: Icon(Icons.filter_list)),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    InkWell(
-                      onTap: (){
-                        provider.setSearching(true);
-                      },
-                      child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.purple.withOpacity(0.1), // Set the desired color
-                        ),
-                        child: Icon(Icons.search,
-                        color: Colors.purple,),
-                      ),
-                    ),
-                    Text('Find your Heart mate',
-                    style: TextStyle(
-                      fontSize: 16.sp
-                    ),
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.purple.withOpacity(0.1), // Set the desired color
-                            ),
-                            child: Icon(Icons.star_outlined)),
-                        SizedBox(
-                          width: 5.w,
-                        ),
-                        Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.purple.withOpacity(0.1), // Set the desired color
-                            ),
-                            child: Icon(Icons.filter_list)),
-                      ],
-                    ),
-                  ],
+                  ),
+                )
+              : AppBar(
+                  iconTheme: IconThemeData(
+                    color: Colors.purple,
+                  ),
+                  toolbarHeight: 65.h,
+                  backgroundColor: Colors.white,
+                  centerTitle: true,
+                  title: Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: Container(height: 65.h, child: OnFocusSearchAppBar()),
+                  ),
                 ),
-              ),
-            ),
-          )
-          : AppBar(
-            iconTheme: IconThemeData(
-              color: Colors.purple,
-
-            ),            toolbarHeight: 60.h,
-            backgroundColor: Colors.white,
-            centerTitle: true,
-            title: Container(
-              height: 65.h,
-              child: OnFocusSearchAppBar()
-            ),
-          ),
           body: Container(
-            child:
-            ListView.builder(
+            height: double.infinity,
+            child: ListView.builder(
               itemCount: imageNames.length,
-              itemBuilder: (BuildContext context, int index){
-                return Padding(
-                  padding:  EdgeInsets.only(bottom: 10.sp),
+              itemBuilder: (BuildContext context, int index) {
+                return
+                  Padding(
+                  padding: EdgeInsets.only(bottom: 10.sp),
                   child: ProfileCard(
                     image: imageNames[index],
-                    name:  names[index],
+                    name: names[index],
                   ),
                 );
               },
             ),
           ),
 
-          // drawer: Drawer(
-          //
-          //
-          //   // Add a ListView to the drawer.
-          //   child: ListView(
-          //     padding: EdgeInsets.zero,
-          //     children: [
-          //       const DrawerHeader(
-          //         decoration: BoxDecoration(
-          //           color: Colors.blue,
-          //         ),
-          //         child: Text('Drawer Header'),
-          //       ),
-          //       ListTile(
-          //         title: const Text('Home'),
-          //         selected: _selectedIndex == 0,
-          //         onTap: () {
-          //           // Update the state of the app
-          //           _onItemTapped(0);
-          //           // Then close the drawer
-          //           Navigator.pop(context);
-          //         },
-          //       ),
-          //       ListTile(
-          //         title: const Text('Business'),
-          //         selected: _selectedIndex == 1,
-          //         onTap: () {
-          //           // Update the state of the app
-          //           _onItemTapped(1);
-          //           // Then close the drawer
-          //           Navigator.pop(context);
-          //         },
-          //       ),
-          //       ListTile(
-          //         title: const Text('School'),
-          //         selected: _selectedIndex == 2,
-          //         onTap: () {
-          //           // Update the state of the app
-          //           _onItemTapped(2);
-          //           // Then close the drawer
-          //           Navigator.pop(context);
-          //         },
-          //       ),
-          //     ],
-          //   ),
-          // ),
+
         ),
       );
     });

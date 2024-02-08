@@ -49,7 +49,7 @@ class _ProfileCardState extends State<ProfileCard> {
                     topRight:
                         Radius.circular(13.r)), // Set the desired border radius
                 child: Image.asset(
-                  'assets/images/m3.jpg',
+                  widget.image,
                   height: 250.h,
                   width: 150.w,
                   fit: BoxFit.cover,
