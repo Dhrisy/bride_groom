@@ -1,5 +1,8 @@
 import 'package:bride_groom/authentication/auth_service.dart';
 import 'package:bride_groom/authentication/entry_page.dart';
+import 'package:bride_groom/home_page/home_page.dart';
+import 'package:bride_groom/services/firebase_services.dart';
+import 'package:bride_groom/splash_screen/splashscreen_widgets.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,11 +20,15 @@ void main() async{
   }
   GetIt.I.registerLazySingleton(() => AuthSignUpService());
   GetIt.I.registerLazySingleton(() => AuthSignInService());
+  GetIt.I.registerLazySingleton(() => FirebaseServices());
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => GenderProvider()),
-        ChangeNotifierProvider(create: (context) => LoadingProvider()),
+        ChangeNotifierProvider(create: (context) => AppProvider()),
+        // ChangeNotifierProvider(create: (context) => LoadingProvider()),
+        // ChangeNotifierProvider(create: (context) => SearchProvider()),
+
       ],
       child: MyApp(),
     ),
@@ -35,9 +42,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    print('yyyyyy');
     return ScreenUtilInit(
     child: MaterialApp(
-      home: EntryPage(),
+      home: SplashScreen(),
     ),
 
     );

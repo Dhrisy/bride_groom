@@ -14,6 +14,18 @@ class AuthSignUpService {
       return e.message; // Return error message if sign-up fails
     }
   }
+  Future<String?> getCurrentUserId() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        return user.uid;
+      }
+      return null; // User is not logged in
+    } catch (e) {
+      print('Error getting current user ID: $e');
+      return null;
+    }
+  }
 }
 
 class AuthSignInService {
@@ -25,6 +37,7 @@ class AuthSignInService {
         email: email,
         password: password,
       );
+
       return null; // Sign-in successful, return null for no error
     } on FirebaseAuthException catch (e) {
       return e.message; // Return error message if sign-in fails

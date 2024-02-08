@@ -1,9 +1,12 @@
 import 'package:bride_groom/authentication/login_page/login_page.dart';
+import 'package:bride_groom/authentication/login_page/verified_widget.dart';
 import 'package:bride_groom/authentication/sign_up_page/provider.dart';
 import 'package:bride_groom/authentication/sign_up_page/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+
+import 'greeting_page.dart';
 
 class BottomWidget extends StatelessWidget {
   const BottomWidget({Key? key}) : super(key: key);
@@ -19,7 +22,7 @@ class BottomWidget extends StatelessWidget {
             topLeft: Radius.circular(25),
             topRight: Radius.circular(25),
           )),
-      child: Consumer<LoadingProvider>(
+      child: Consumer<AppProvider>(
         builder: (context, loadingProvider, child){
           return Column(
             mainAxisSize: MainAxisSize.max,
@@ -30,7 +33,19 @@ class BottomWidget extends StatelessWidget {
                 onTap: (){
                   loadingProvider.setErrorMessage(false);
                   loadingProvider.setLoading(false);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                  Navigator.push(context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) => LoginPage(),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        var curve = Curves.fastOutSlowIn;
+
+                        return FadeTransition(
+                          opacity: animation.drive(CurveTween(curve: curve)),
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
                 },
                 child: Container(
                   width: 200.w,
