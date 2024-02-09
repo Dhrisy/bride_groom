@@ -5,6 +5,7 @@ import 'package:bride_groom/authentication/entry_page.dart';
 import 'package:bride_groom/authentication/greeting_page.dart';
 import 'package:bride_groom/authentication/login_page/login_page.dart';
 import 'package:bride_groom/components/common_button.dart';
+import 'package:bride_groom/components/error_text.dart';
 import 'package:bride_groom/components/reusable_button.dart';
 import 'package:bride_groom/home_page/home_page.dart';
 import 'package:bride_groom/home_page/onboarding.dart';
@@ -155,7 +156,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               height: 5.h,
                             ),
                             if (loadingPrvider.errorMessage)
-                              _errorText(context),
+                              ErrorText(),
                             SizedBox(
                               height: 20.h,
                             ),

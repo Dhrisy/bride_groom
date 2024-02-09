@@ -5,6 +5,7 @@ import 'package:bride_groom/profile/profile_widget.dart';
 import 'package:bride_groom/splash_screen/splashscreen_widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
@@ -132,142 +133,154 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppProvider>(builder: (context, provider, child) {
-      return GestureDetector(
-        onTap: () {
-          print('kkkkkkk');
-          FocusScope.of(context).unfocus();
-          provider.setSearching(false);
-        },
-        child: Scaffold(
-          appBar: provider.isSearching == false
-              ? AppBar(
-                  leadingWidth: 20,
-                  iconTheme: IconThemeData(
-                    color: Colors.purple,
-                  ),
+    return WillPopScope(
+      onWillPop: () async {
+        // Perform your custom logic here
 
-                  toolbarHeight: 60.h,
-                  backgroundColor:
-                      Colors.white, //Colors.purple.withOpacity(0.1),
-                  centerTitle: true,
-                  title: Container(
-                    height: 60.h,
-                    // color: Colors.purple.withOpacity(0.1),
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 5.w),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          InkWell(
-                            onTap: () async {
-                              // await _signOut();
-                              // clearSharedPreferences();
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ProfileWidget()));
+        // Exit the app when the back button is pressed
+        SystemNavigator.pop();
+        return false; // You can also return true to allow back navigation
+      },
+      child: Consumer<AppProvider>(builder: (context, provider, child) {
+        return GestureDetector(
+          onTap: () {
+            print('kkkkkkk');
+            FocusScope.of(context).unfocus();
+            provider.setSearching(false);
+          },
+          child: Scaffold(
+            appBar: provider.isSearching == false
+                ? AppBar(
+                    leadingWidth: 20,
+                    iconTheme: IconThemeData(
+                      color: Colors.purple,
+                    ),
 
-                              // provider.setSearching(true);
-                            },
-                            child: Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.purple
-                                    .withOpacity(0.1), // Set the desired color
-                              ),
-                              child: Icon(
-                                Icons.person,
-                                color: Colors.purple,
+                    toolbarHeight: 60.h,
+                    backgroundColor:
+                        Colors.white, //Colors.purple.withOpacity(0.1),
+                    centerTitle: true,
+                    title: Container(
+                      height: 60.h,
+                      // color: Colors.purple.withOpacity(0.1),
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 5.w),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            InkWell(
+                              onTap: () async {
+                                // await _signOut();
+                                // clearSharedPreferences();
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ProfileWidget(
+                                          user_data: widget.user_data,
+
+                                        )));
+
+                                // provider.setSearching(true);
+                              },
+                              child: Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.purple
+                                      .withOpacity(0.1), // Set the desired color
+                                ),
+                                child: Icon(
+                                  Icons.person,
+                                  color: Colors.purple,
+                                ),
                               ),
                             ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              provider.setSearching(true);
-                            },
-                            child: Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.purple
-                                    .withOpacity(0.1), // Set the desired color
-                              ),
-                              child: Icon(
-                                Icons.search,
-                                color: Colors.purple,
+                            InkWell(
+                              onTap: () {
+                                provider.setSearching(true);
+                              },
+                              child: Container(
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.purple
+                                      .withOpacity(0.1), // Set the desired color
+                                ),
+                                child: Icon(
+                                  Icons.search,
+                                  color: Colors.purple,
+                                ),
                               ),
                             ),
-                          ),
-                          Text(
-                            'Find your Heart mate',
-                            style: TextStyle(fontSize: 16.sp),
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                  height: 40,
-                                  width: 40,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.purple.withOpacity(
-                                        0.1), // Set the desired color
-                                  ),
-                                  child: Icon(Icons.star_outlined)),
-                              SizedBox(
-                                width: 5.w,
-                              ),
-                              Container(
-                                  height: 40,
-                                  width: 40,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.purple.withOpacity(
-                                        0.1), // Set the desired color
-                                  ),
-                                  child: Icon(Icons.filter_list)),
-                            ],
-                          ),
-                        ],
+                            Text(
+                              'Find your Heart mate',
+                              style: TextStyle(fontSize: 16.sp),
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                    height: 40,
+                                    width: 40,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.purple.withOpacity(
+                                          0.1), // Set the desired color
+                                    ),
+                                    child: Icon(Icons.star_outlined)),
+                                SizedBox(
+                                  width: 5.w,
+                                ),
+                                Container(
+                                    height: 40,
+                                    width: 40,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.purple.withOpacity(
+                                          0.1), // Set the desired color
+                                    ),
+                                    child: Icon(Icons.filter_list)),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
+                  )
+                : AppBar(
+                    iconTheme: IconThemeData(
+                      color: Colors.purple,
+                    ),
+                    toolbarHeight: 65.h,
+                    backgroundColor: Colors.white,
+                    centerTitle: true,
+                    title: Padding(
+                      padding: const EdgeInsets.only(bottom: 5),
+                      child: Container(height: 65.h, child: OnFocusSearchAppBar()),
+                    ),
                   ),
-                )
-              : AppBar(
-                  iconTheme: IconThemeData(
-                    color: Colors.purple,
-                  ),
-                  toolbarHeight: 65.h,
-                  backgroundColor: Colors.white,
-                  centerTitle: true,
-                  title: Padding(
-                    padding: const EdgeInsets.only(bottom: 5),
-                    child: Container(height: 65.h, child: OnFocusSearchAppBar()),
-                  ),
-                ),
-          body: Container(
-            height: double.infinity,
-            child: ListView.builder(
-              itemCount: imageNames.length,
-              itemBuilder: (BuildContext context, int index) {
-                return
-                  Padding(
-                  padding: EdgeInsets.only(bottom: 10.sp),
-                  child: ProfileCard(
-                    image: imageNames[index],
-                    name: names[index],
-                  ),
-                );
-              },
+            body: Container(
+              height: double.infinity,
+              child: ListView.builder(
+                itemCount: imageNames.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return
+                    Padding(
+                    padding: EdgeInsets.only(bottom: 10.sp),
+                    child: ProfileCard(
+                      image: imageNames[index],
+                      name: names[index],
+                    ),
+                  );
+                },
+              ),
             ),
+
+
           ),
-
-
-        ),
-      );
-    });
+        );
+      }),
+    );
   }
 }
