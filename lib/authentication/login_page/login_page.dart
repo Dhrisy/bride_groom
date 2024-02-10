@@ -1,5 +1,6 @@
 import 'package:bride_groom/authentication/login_page/verified_widget.dart';
 import 'package:bride_groom/services/firebase_services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,8 @@ import 'package:bride_groom/components/reusable_text_field.dart';
 import 'package:bride_groom/home_page/home_page.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../forgot_pw/forgot_password.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -75,6 +78,8 @@ class _LoginPageState extends State<LoginPage> {
                           height: 10.h,
                         ),
                         ReusabeTextField(
+                          onChange: (val){},
+
                           phn: false,
                           hint_text: 'Enter your email address',
                           controller: emailController,
@@ -87,6 +92,8 @@ class _LoginPageState extends State<LoginPage> {
                           height: 10.h,
                         ),
                         ReusabeTextField(
+                          onChange: (val){},
+
                           phn: false,
                           hint_text: 'Enter your password',
                           controller: pwController,
@@ -116,12 +123,9 @@ class _LoginPageState extends State<LoginPage> {
                               );
 
                               if (error == null) {
+
                                 user_data = await _firebase_services.getUserDataByEmail(emailController.text);
-                                print('ccccc${user_data!['name']}');
-
                                 provider.setEmail(emailController.text);
-
-
 
                                 final full_name = toSentenceCase(user_data!['name']);
                                 Future.delayed(Duration(seconds: 2), () {

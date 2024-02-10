@@ -1,32 +1,49 @@
 import 'package:bride_groom/profile/edit_profile/edit_profile_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_it/get_it.dart';
 
-class OptionCardWidget extends StatelessWidget {
+import '../../services/firebase_services.dart';
+
+class OptionCardWidget extends StatefulWidget {
   const OptionCardWidget({Key? key,
-  required this.title,
-  required this.icon,
+    required this.title,
+    required this.icon,
     required this.index,
     this.user_data,
     this.logout,
+    this.email,
+    required this.callback,
+
   }) : super(key: key);
   final String title;
   final IconData icon;
   final int index;
   final bool? logout;
   final Map<String, dynamic>? user_data;
+  final String? email;
+  final VoidCallback callback;
+
+
+  @override
+  State<OptionCardWidget> createState() => _OptionCardWidgetState();
+}
+
+
+
+class _OptionCardWidgetState extends State<OptionCardWidget> {
+
+  @override
+  void initState() {
+    super.initState();
+    print(widget.user_data);
+  }
 
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){
-        if(index == 1){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileWidget(
-            user_data: user_data,
-          )));
-        }
-      },
+      onTap: () => widget.callback.call(),
       child: Container(
         height: 60.h,
         decoration: BoxDecoration(
@@ -49,18 +66,18 @@ class OptionCardWidget extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    icon,
-                    color: logout == true ? Colors.red
-                                          :Colors.purple,
+                    widget.icon,
+                    color: widget.logout == true ? Colors.red
+                        :Colors.purple,
                     size: 16.sp,
                   ),
                   SizedBox(
                     width: 5.w,
                   ),
                   Text(
-                    title,
+                    widget.title,
                     style:
-                        TextStyle(fontWeight: FontWeight.normal, fontSize: 14.sp),
+                    TextStyle(fontWeight: FontWeight.normal, fontSize: 14.sp),
                   ),
                 ],
               ),
@@ -80,3 +97,4 @@ class OptionCardWidget extends StatelessWidget {
     );
   }
 }
+

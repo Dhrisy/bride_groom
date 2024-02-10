@@ -33,14 +33,21 @@ class AuthSignInService {
 
   Future<String?> signInWithEmailPassword(String email, String password) async {
     try {
-      await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      return null; // Sign-in successful, return null for no error
-    } on FirebaseAuthException catch (e) {
-      return e.message; // Return error message if sign-in fails
+      if (email != null && password != null) {
+        await _auth.signInWithEmailAndPassword(
+          email: email ?? '',
+          password: password,
+        );
+        print('ooooo');
+        // The sign-in was successful
+        // You can add further logic here
+      } else {
+        print('Email or password is null');
+        // Handle the case where email or password is null
+      }
+    } catch (e) {
+      print('Error signing in: $e');
+      // Handle the error
     }
   }
 }

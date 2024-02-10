@@ -1,5 +1,6 @@
 import 'package:bride_groom/components/common_button.dart';
 import 'package:bride_groom/components/reusable_text_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -54,7 +55,21 @@ class ForgotPassword extends StatelessWidget {
                         color: Colors.black54
                       ),),
                     ReusabeTextField(
-                      email: true,
+                      validator: (val){
+                        if (forgot_pw_textEditingController.text.isEmpty ||
+                            forgot_pw_textEditingController.text == '') {
+                          return 'Please enter this field';
+                        } else {
+                          final emailRegex = RegExp(
+                              r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+                          if (!emailRegex.hasMatch(val!)) {
+                            return 'Please enter a valid email address';
+                          }
+                        }
+                      },
+                        onChange: (val){},
+                        phn: false,
+                        email: true,
                         hint_text: 'Email address',
                         controller: forgot_pw_textEditingController,
                         icon: Icon(Icons.mail)
@@ -64,10 +79,49 @@ class ForgotPassword extends StatelessWidget {
                     ),
 
                     CommonButton(
-                        callback: (){
+                        callback: () async{
                           if (_formKey.currentState!.validate()) {
                             // Form is valid, proceed with your login logic
                             print('Form is valid');
+                           await  resetPassword(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
+                                content: Container(
+                                    width: double.infinity,
+                                    height: 60.h,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(Radius.circular(20.r)),
+                                      border: Border.all(
+                                        color: Colors.purple, // Set the border color here
+                                        width: 2.0, // Set the border width
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: 10.w,
+                                        ),
+                                        Icon(
+                                          Icons.done,
+                                          color: Colors.green,
+                                        ),
+                                        Expanded(
+                                            child: Text(
+                                              'Reset email sent successfully',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(color: Colors.green, fontSize: 14.sp),
+                                            )),
+                                      ],
+                                    )),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                            Navigator.pop(context);
+
                             // loadingProvider.setErrorMessage(false);
                             // Now you can access the individual form field values
                           } else {
@@ -88,4 +142,24 @@ class ForgotPassword extends StatelessWidget {
           )),
     );
   }
+   Future<void> resetPassword(BuildContext context) async {
+     try {
+       await FirebaseAuth.instance.sendPasswordResetEmail(
+         email: forgot_pw_textEditingController.text,
+       );
+       // Show a success message or navigate to a success screen
+       ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(
+           content: Text('Password reset email sent.'),
+         ),
+       );
+     } catch (e) {
+       // Show an error message
+       ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(
+           content: Text('Error: ${e.toString()}'),
+         ),
+       );
+     }
+   }
 }

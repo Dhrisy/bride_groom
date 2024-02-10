@@ -9,7 +9,7 @@ class CommonButton extends StatefulWidget {
     required this.borderColor,
     required this.title,
     this.textStyle,
-    this.height = 60,
+    this.height = 55,
     this.isLoading = false,
     this.width,
   }) : super(key: key);

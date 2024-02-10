@@ -8,6 +8,7 @@ import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../home_page/home_page2.dart';
 import '../services/firebase_services.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -129,7 +130,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             ),
 
             SizedBox(height: 20.0),
-            Text('sdfghjm'),
+            // Text('C'),
 
             // Your app name or tagline
           ],

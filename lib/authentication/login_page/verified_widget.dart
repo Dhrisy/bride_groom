@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../home_page/home_page2.dart';
 import '../../services/firebase_services.dart';
 
 class VerifiedCredential extends StatefulWidget {

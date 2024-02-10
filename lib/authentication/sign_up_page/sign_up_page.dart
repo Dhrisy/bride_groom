@@ -9,6 +9,7 @@ import 'package:bride_groom/components/error_text.dart';
 import 'package:bride_groom/components/reusable_button.dart';
 import 'package:bride_groom/home_page/home_page.dart';
 import 'package:bride_groom/home_page/onboarding.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
@@ -114,6 +115,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               height: 10.h,
                             ),
                             ReusabeTextField(
+                              onChange: (val){},
+
                               phn: false,
                               hint_text: 'Enter your name',
                               controller: name_textEditingController,
@@ -123,6 +126,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               height: 8.h,
                             ),
                             ReusabeTextField(
+                              onChange: (val){},
+
                               phn: false,
                               hint_text: 'Enter your email address',
                               controller: email_textEditingController,
@@ -133,6 +138,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               height: 10.h,
                             ),
                             ReusabeTextField(
+                              onChange: (val){},
+
                               phn: true,
                               hint_text: 'Enter your phone number',
                               controller: phn_textEditingController,
@@ -142,6 +149,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               height: 10.h,
                             ),
                             ReusabeTextField(
+                              onChange: (val){},
+
                               phn: false,
                               hint_text: 'Enter your password',
                               controller: pw_textEditingController,
@@ -185,6 +194,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     await Future.delayed(
                                         Duration(seconds: 2));
                                     loadingPrvider.setLoading(false);
+                                    loadingPrvider.setEmail(email_textEditingController.text);
                                     String phone = "+91${phn_textEditingController.text}";
                                     //storing the data into the firebase
                                    try{
@@ -194,7 +204,54 @@ class _SignUpPageState extends State<SignUpPage> {
                                        phone: phone,
                                        password: pw_textEditingController.text,
                                        gender: userSelectedGender,
+                                       image: '',
+                                       caste: '',
+                                       country: '',
+                                       dob: '',
+                                       education: '',
+                                       hgt: '',
+                                       location: '',
+                                       pincode: '',
+                                       religion: '',
+                                       state: '',
+                                       wgt: ''
+
                                      );
+
+
+                                     try {
+                                       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+                                           .collection('users')
+                                           .where('email', isEqualTo: email_textEditingController.text)
+                                           .get();
+
+                                       if (querySnapshot.docs.isNotEmpty) {
+                                         print('SSSSSSSSSS${querySnapshot.docs.first.id}');
+                                         loadingPrvider.setUserId(querySnapshot.docs.first.id);
+
+                                         await FirebaseFirestore.instance.collection('users').doc(loadingPrvider.UserId)
+                                             .update({
+                                           'user_id': loadingPrvider.UserId
+                                         });
+
+                                         SharedPreferences prefs = await SharedPreferences.getInstance();
+
+                                         // Save user data to shared preferences
+                                         prefs.setString('user_id', loadingPrvider.UserId);
+
+
+
+                                       } else {
+                                         print('EMPTY'); // User not found
+                                       }
+                                     } catch (e) {
+                                       print('Error fetching user ID: $e');
+                                       return null;
+                                     }
+                                     //
+                                     // FirebaseServices _firebase_services = GetIt.I.get<FirebaseServices>();
+                                     // final user_data = await _firebase_services.getUserDataByEmail(email_textEditingController.text);
+                                     // loadingPrvider.setUserId(user_data.)
                                    }catch(e){
 
                                      print('Exception : $e');
