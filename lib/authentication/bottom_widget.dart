@@ -1,12 +1,10 @@
 import 'package:bride_groom/authentication/login_page/login_page.dart';
-import 'package:bride_groom/authentication/login_page/verified_widget.dart';
-import 'package:bride_groom/authentication/sign_up_page/provider.dart';
+import 'package:bride_groom/authentication/provider/provider.dart';
 import 'package:bride_groom/authentication/sign_up_page/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import 'greeting_page.dart';
 
 class BottomWidget extends StatelessWidget {
   const BottomWidget({Key? key}) : super(key: key);

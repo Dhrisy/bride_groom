@@ -1,7 +1,3 @@
-import 'package:bride_groom/authentication/sign_up_page/provider.dart';
-import 'package:bride_groom/custom_functions/custom_functions.dart';
-import 'package:bride_groom/home_page/home_page.dart';
-import 'package:bride_groom/profile/widgets/grid_view_images.dart';
 import 'package:bride_groom/profile/widgets/option_card_widget.dart';
 import 'package:bride_groom/profile/widgets/user_card.dart';
 import 'package:bride_groom/splash_screen/splashscreen_widgets.dart';
@@ -12,17 +8,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import '../authentication/provider/provider.dart';
+import '../home_page/home_page2.dart';
 import '../services/firebase_services.dart';
 import 'edit_profile/edit_profile_widget.dart';
 
 class ProfileWidget extends StatefulWidget {
   const ProfileWidget({
     Key? key,
+    this.userId,
     required this.user_data,
   }) : super(key: key);
 
   final Map<String, dynamic>? user_data;
+  final String? userId;
 
   @override
   State<ProfileWidget> createState() => _ProfileWidgetState();
@@ -63,11 +62,9 @@ class _ProfileWidgetState extends State<ProfileWidget>
   }
 
   void fetch() async {
-    FirebaseServices _firebase_services = GetIt.I.get<FirebaseServices>();
+    FirebaseServicesWidget _firebase_services = GetIt.I.get<FirebaseServicesWidget>();
     Map<String, dynamic>? userData =
         await _firebase_services.getUserDataByEmail(widget.user_data!['email']);
-    // await getUserDataByEmail(widget.user_data!['email']);
-
     if (userData != null) {
       setState(() {
         fetch_data = userData;
@@ -81,9 +78,9 @@ class _ProfileWidgetState extends State<ProfileWidget>
   @override
   void initState() {
     super.initState();
+    print('ddddddd${widget.user_data},  ${widget.userId}');
     fetch();
     fetchData();
-
     tabBarController = TabController(
       vsync: this,
       length: 2,
@@ -95,10 +92,15 @@ class _ProfileWidgetState extends State<ProfileWidget>
     prefs.getString('user_id');
     user_id = prefs.getString('user_id');
 
+    if(user_id == null || user_id == ''){
+      print('USER ID NULL');
+    }else{
+      print('USER not null');
+    }
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .where('user_id', isEqualTo: prefs.getString('user_id'))
+          .where('user_id', isEqualTo: widget.userId)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -107,7 +109,7 @@ class _ProfileWidgetState extends State<ProfileWidget>
         setState(() {
           fetch_data = userData as Map<String, dynamic>?;
         });
-        print('User Data: $userData');
+        print('User Data: $userData,  $fetch_data');
       } else {
         // No data found
         print('No user data found');
@@ -118,35 +120,18 @@ class _ProfileWidgetState extends State<ProfileWidget>
     }
   }
 
-  // stream: FirebaseFirestore.instance.collection('users').where('user_id', isEqualTo: user_id).snapshots(),
-  // builder: (context, snapshot) {
-  // if (snapshot.hasError) {
-  // return Center(
-  // child: Text('Error: ${snapshot.error}'),
-  // );
-  // }
-  // if (snapshot.connectionState == ConnectionState.waiting) {
-  // return Center(
-  // child: CircularProgressIndicator(),
-  // );
-  // }
-  // // Access the first document that matches the condition
-  // DocumentSnapshot document = snapshot.data!.docs.isNotEmpty
-  // ? snapshot.data!.docs[0]
-  //     : throw 'No document found.';
-  // // Access data from the document
-  // Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
-            .where('user_id', isEqualTo: user_id)
+            .where('user_id', isEqualTo: widget.userId)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(
+            return const Center(
               child: SizedBox(
                 width: 50.0,
                 height: 50.0,
@@ -157,20 +142,28 @@ class _ProfileWidgetState extends State<ProfileWidget>
             );
           }
 
-          List<DocumentSnapshot> filteredDocuments =
-              snapshot.data!.docs.where((document) {
-            print(
-                'Document gender: ${document['user_id']}, Selected gender: ${user_id},  ');
-            return document['user_id'] != user_id;
+          // Access the data
+          QuerySnapshot querySnapshot = snapshot.data!;
+          List<QueryDocumentSnapshot> documents = querySnapshot.docs;
 
+          //access data from  documents
+          for (QueryDocumentSnapshot document in documents) {
+            Map<String, dynamic>? userData = document.data() as Map<String, dynamic>;
+            // fetching each field
+            print(userData['name']);
+            print(userData['email']);
+          }
+          QueryDocumentSnapshot document = documents.first;
+          Map<String, dynamic> userData = document.data() as Map<String, dynamic>;
+          print('snapshot ${userData}');
 
-          }).toList();
-          print('SNAPSHOT: ${filteredDocuments}');
           return WillPopScope(
             onWillPop: () async {
+              // Navigator.pop(context);
               Navigator.pop(context);
-              // Navigator.push(context, MaterialPageRoute(builder: (context)=> HomePage(user_data: widget.user_data)));
-              return true; // You can also return true to allow back navigation
+
+              // Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+              return true; // allow back navigation
             },
             child: SafeArea(
               child: Scaffold(
@@ -215,7 +208,6 @@ class _ProfileWidgetState extends State<ProfileWidget>
                                   transitionsBuilder: (context, animation,
                                       secondaryAnimation, child) {
                                     var curve = Curves.fastOutSlowIn;
-
                                     return FadeTransition(
                                       opacity: animation
                                           .drive(CurveTween(curve: curve)),
@@ -228,7 +220,7 @@ class _ProfileWidgetState extends State<ProfileWidget>
                             user_data: fetch_data,
                             index: 1,
                             icon: Icons.person,
-                            title: 'View profile',
+                            title: 'View or Edit profile',
                           ),
                           SizedBox(
                             height: 15.h,
@@ -266,33 +258,63 @@ class _ProfileWidgetState extends State<ProfileWidget>
                             logout: true,
                             title: 'Logout',
                             callback: () {
-                              _signOut();
-                              clearSharedPreferences();
+                              print('yyyyy');
+                              myAlert();
                               provider.clearData();
+                              print('bbbbbbbbbb${provider.UserId}, ${provider.Email}');
 
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => SplashScreen()));
                             },
                           ),
                         ],
                       )
-                      // return ListView.builder(
-                      //   itemCount: documents.length,
-                      //   itemBuilder: (context, index) {
-                      //     // Access data from each document
-                      //     Map<String, dynamic> data = documents[index].data() as Map<String, dynamic>;
-                      //
-                      //     // return ListTile(
-                      //     //   title: Text(data['user_id']),
-                      //     //   // Add more widgets to display other fields or customize as needed
-                      //     // );
-                      //   },
-                      // );
-
                       );
                 }),
+              ),
+            ),
+          );
+        });
+  }
+
+  void myAlert() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            title: Text('Do you want to logout?',
+            textAlign: TextAlign.center,),
+            content: Container(
+              decoration: BoxDecoration(
+
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      //if user click this button, user can upload image from gallery
+                      onPressed: () {
+                        _signOut();
+                        clearSharedPreferences();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SplashScreen()));
+                        },
+                      child: Text('Yes'),
+                    ),
+                  ),
+                  SizedBox(width: 10.w,),
+                  Expanded(
+                    child: ElevatedButton(
+                      //if user click this button. user can upload image from camera
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('No'),
+                    ),
+                  ),
+                ],
               ),
             ),
           );
@@ -302,19 +324,17 @@ class _ProfileWidgetState extends State<ProfileWidget>
   Future<void> clearSharedPreferences() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.clear();
-    print('${preferences.getString('email')},'
+    print('bbbbbbbbbbb${preferences.getString('email')},'
         '${preferences.getString('user_id')},'
         '${preferences.getString('phone')},'
         '${preferences.getString('password')},'
         '${preferences.getString('gender')},');
+
   }
 
   Future<void> _signOut() async {
     try {
       await FirebaseAuth.instance.signOut();
-      // toCheckGender();
-      // Navigate to the sign-in screen or any other screen after sign-out
-      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignInScreen()));
     } catch (e) {
       print("Error signing out: $e");
     }

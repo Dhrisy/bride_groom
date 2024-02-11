@@ -1,11 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../home_page/home_page.dart';
 import '../home_page/home_page2.dart';
 import '../services/firebase_services.dart';
 
@@ -26,10 +22,10 @@ class _GreetingPageState extends State<GreetingPage> with SingleTickerProviderSt
 
   Map<String, dynamic>? user_data;
   late AnimationController _controller;
-  late Animation<double> _animation;
 
+  //fetch  user data
   void fetUseData() async{
-    FirebaseServices _firebase_services = GetIt.I.get<FirebaseServices>();
+    FirebaseServicesWidget _firebase_services = GetIt.I.get<FirebaseServicesWidget>();
     user_data = await _firebase_services.getUserDataByEmail(widget.email);
   }
 
@@ -37,22 +33,6 @@ class _GreetingPageState extends State<GreetingPage> with SingleTickerProviderSt
   void initState() {
     super.initState();
     fetUseData();
-
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 2), // Adjust the duration as needed
-    );
-
-    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeOut,
-      ),
-    );
-    _controller.forward();
-
-    print('rrr${user_data}');
-
     Timer(
       Duration(seconds: 3),
           () => Navigator.pushReplacement(
@@ -91,15 +71,13 @@ class _GreetingPageState extends State<GreetingPage> with SingleTickerProviderSt
                     width: 200.w,
                     height: 200.h,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle, // Set the shape to circle for a rounded container
-
+                      shape: BoxShape.circle,
                     ),
                     child: ClipOval(
                       child: Image.asset('assets/images/waving_hand.gif',
                       ),
                     ),
                   ),
-
                 ],
               ),
               _welcomeMessage(context)

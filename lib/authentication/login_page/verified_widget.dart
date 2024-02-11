@@ -1,9 +1,10 @@
 import 'dart:async';
 
-import 'package:bride_groom/home_page/home_page.dart';
+import 'package:bride_groom/authentication/provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../home_page/home_page2.dart';
@@ -31,14 +32,17 @@ class _VerifiedCredentialState extends State<VerifiedCredential>
 
 
   void fetUseData() async{
-    FirebaseServices _firebase_services = GetIt.I.get<FirebaseServices>();
+    FirebaseServicesWidget _firebase_services = GetIt.I.get<FirebaseServicesWidget>();
     user_data = await _firebase_services.getUserDataByEmail(widget.email);
+    print('nnnnnnn${user_data}');
   }
 
   @override
   void initState() {
     super.initState();
+    // var provider = Provider.of<AppProvider>(context);
     fetUseData();
+
 
     _controller = AnimationController(
       vsync: this,
@@ -59,6 +63,7 @@ class _VerifiedCredentialState extends State<VerifiedCredential>
         context,
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) => HomePage(
+                userId: user_data!['user_id'],
                 user_data: user_data,
               ),
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -81,34 +86,36 @@ class _VerifiedCredentialState extends State<VerifiedCredential>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 100.w,
-                  height: 100.h,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
+    return Consumer<AppProvider>(builder: (context, provider, child){
+      return SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 100.w,
+                    height: 100.h,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                    ),
+                    child: ClipOval(
+                      child: Image.asset('assets/images/clapping.gif'),
+                    ),
                   ),
-                  child: ClipOval(
-                    child: Image.asset('assets/images/clapping.gif'),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10.h),
-            _welcomeMessage(context),
-          ],
+                ],
+              ),
+              SizedBox(height: 10.h),
+              _welcomeMessage(context),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   _welcomeMessage(context) {

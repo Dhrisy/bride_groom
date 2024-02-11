@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'package:bride_groom/authentication/entry_page.dart';
-import 'package:bride_groom/authentication/sign_up_page/provider.dart';
-import 'package:bride_groom/home_page/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../authentication/provider/provider.dart';
 import '../home_page/home_page2.dart';
 import '../services/firebase_services.dart';
 
@@ -19,12 +18,9 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-
   String? user_id;
   String email = '';
   Map<String, dynamic>? user_data;
-
-
 
   @override
   void initState() {
@@ -43,9 +39,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       ),
     );
     _controller.forward();
+  }
 
-
-
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   Future<String> getEmail() async{
@@ -58,7 +57,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         email = Email;
       });
       print('user_id: ${prefs.getString('user_id')}');
-
       return Email;
     }catch(e){
       print(e);
@@ -67,8 +65,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   void fetUseData( String email) async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    FirebaseServices _firebase_services = GetIt.I.get<FirebaseServices>();
+    FirebaseServicesWidget _firebase_services = GetIt.I.get<FirebaseServicesWidget>();
     user_data = await _firebase_services.getUserDataByEmail(email);
   }
 
@@ -96,8 +93,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         ),
       );
     }
-
-    // ... rest of your initState code
   }
 
 
@@ -105,9 +100,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     AppProvider myProvider = Provider.of<AppProvider>(context);
     print(myProvider.Email);
-
     return Scaffold(
-      backgroundColor: Colors.purple, // Set your preferred background color
+      backgroundColor: Colors.purple,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -128,20 +122,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 width: 100.h,
               ),
             ),
-
             SizedBox(height: 20.0),
-            // Text('C'),
+            ],
 
-            // Your app name or tagline
-          ],
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 }

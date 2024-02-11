@@ -1,26 +1,20 @@
 import 'dart:async';
-
 import 'package:bride_groom/authentication/auth_service.dart';
-import 'package:bride_groom/authentication/entry_page.dart';
 import 'package:bride_groom/authentication/greeting_page.dart';
 import 'package:bride_groom/authentication/login_page/login_page.dart';
+import 'package:bride_groom/authentication/provider/provider.dart';
 import 'package:bride_groom/components/common_button.dart';
 import 'package:bride_groom/components/error_text.dart';
-import 'package:bride_groom/components/reusable_button.dart';
-import 'package:bride_groom/home_page/home_page.dart';
-import 'package:bride_groom/home_page/onboarding.dart';
+import 'package:bride_groom/custom_functions/custom_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../components/reusable_text_field.dart';
 import '../../services/firebase_services.dart';
-import 'provider.dart';
 
-// ... (imports remain unchanged)
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -32,7 +26,6 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
 
   TextEditingController name_textEditingController = TextEditingController();
   TextEditingController email_textEditingController = TextEditingController();
@@ -46,6 +39,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   bool isLoading = false;
   bool error_message = false;
+   Map<String, dynamic>? user_data;
 
 
   @override
@@ -115,8 +109,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               height: 10.h,
                             ),
                             ReusabeTextField(
-                              onChange: (val){},
-
+                              onChange: (val) {},
                               phn: false,
                               hint_text: 'Enter your name',
                               controller: name_textEditingController,
@@ -126,20 +119,31 @@ class _SignUpPageState extends State<SignUpPage> {
                               height: 8.h,
                             ),
                             ReusabeTextField(
-                              onChange: (val){},
-
+                              onChange: (val) {
+                              },
                               phn: false,
                               hint_text: 'Enter your email address',
                               controller: email_textEditingController,
                               icon: Icon(Icons.email),
                               email: true,
+                              validator: (value){
+                                if (email_textEditingController.text.isEmpty ||
+                                    email_textEditingController.text == '') {
+                                  return 'Please enter this field';
+                                } else {
+                                  final emailRegex = RegExp(
+                                      r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+                                  if (!emailRegex.hasMatch(value!)) {
+                                    return 'Please enter a valid email address';
+                                  }
+                                }
+                              },
                             ),
                             SizedBox(
                               height: 10.h,
                             ),
                             ReusabeTextField(
-                              onChange: (val){},
-
+                              onChange: (val) {},
                               phn: true,
                               hint_text: 'Enter your phone number',
                               controller: phn_textEditingController,
@@ -149,8 +153,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               height: 10.h,
                             ),
                             ReusabeTextField(
-                              onChange: (val){},
-
+                              onChange: (val) {},
                               phn: false,
                               hint_text: 'Enter your password',
                               controller: pw_textEditingController,
@@ -164,115 +167,260 @@ class _SignUpPageState extends State<SignUpPage> {
                             SizedBox(
                               height: 5.h,
                             ),
-                            if (loadingPrvider.errorMessage)
+                            if(loadingPrvider.selectedGender == 'Select')
+                            // if (loadingPrvider.errorMessage)
                               ErrorText(),
                             SizedBox(
                               height: 20.h,
                             ),
                             CommonButton(
                               callback: () async {
-                                FirebaseServices firebaseService = GetIt.I<FirebaseServices>();
+                                FirebaseServicesWidget firebaseService =
+                                    GetIt.I<FirebaseServicesWidget>();
 
                                 loadingPrvider.setLoading(true);
                                 if (_formKey.currentState!.validate()) {
                                   // Form is valid, proceed with your logic
                                   print('Form is valid');
-                                  loadingPrvider.setErrorMessage(false);
-                                  // Get instance of AuthService using get_it
-                                  AuthSignUpService authService = GetIt.I.get<AuthSignUpService>();
-                                  String? user_id = await authService.getCurrentUserId();
-                                  // Call the signUpWithEmailPassword method
-                                  String? error = await authService
-                                      .signUpWithEmailPassword(
-                                    email_textEditingController.text,
-                                    pw_textEditingController.text,
-                                  );
-                                  // Handle the sign-up result
-                                  if (error == null) {
-                                    print('aaaa');
-                                    saveUserDataToSharedPreferences();
-                                    await Future.delayed(
-                                        Duration(seconds: 2));
+
+
+                                  bool emailExists = await  CustomFunctions.emailExist(email_textEditingController.text);
+                                  print(emailExists);
+                                  if(emailExists){
+                                    myAlert();
                                     loadingPrvider.setLoading(false);
-                                    loadingPrvider.setEmail(email_textEditingController.text);
-                                    String phone = "+91${phn_textEditingController.text}";
-                                    //storing the data into the firebase
-                                   try{
-                                     await firebaseService.addUserToFirestore(
-                                       name: name_textEditingController.text,
-                                       email: email_textEditingController.text,
-                                       phone: phone,
-                                       password: pw_textEditingController.text,
-                                       gender: userSelectedGender,
-                                       image: '',
-                                       caste: '',
-                                       country: '',
-                                       dob: '',
-                                       education: '',
-                                       hgt: '',
-                                       location: '',
-                                       pincode: '',
-                                       religion: '',
-                                       state: '',
-                                       wgt: ''
+                                    print('Email exists');
 
-                                     );
-
-
-                                     try {
-                                       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-                                           .collection('users')
-                                           .where('email', isEqualTo: email_textEditingController.text)
-                                           .get();
-
-                                       if (querySnapshot.docs.isNotEmpty) {
-                                         print('SSSSSSSSSS${querySnapshot.docs.first.id}');
-                                         loadingPrvider.setUserId(querySnapshot.docs.first.id);
-
-                                         await FirebaseFirestore.instance.collection('users').doc(loadingPrvider.UserId)
-                                             .update({
-                                           'user_id': loadingPrvider.UserId
-                                         });
-
-                                         SharedPreferences prefs = await SharedPreferences.getInstance();
-
-                                         // Save user data to shared preferences
-                                         prefs.setString('user_id', loadingPrvider.UserId);
-
-
-
-                                       } else {
-                                         print('EMPTY'); // User not found
-                                       }
-                                     } catch (e) {
-                                       print('Error fetching user ID: $e');
-                                       return null;
-                                     }
-                                     //
-                                     // FirebaseServices _firebase_services = GetIt.I.get<FirebaseServices>();
-                                     // final user_data = await _firebase_services.getUserDataByEmail(email_textEditingController.text);
-                                     // loadingPrvider.setUserId(user_data.)
-                                   }catch(e){
-
-                                     print('Exception : $e');
-                                   }
-
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => GreetingPage(
-                                          name: name_textEditingController.text,
-                                          email: email_textEditingController.text,
-                                        ),
-                                      ),
+                                  }else{
+                                    print('not exists');
+                                    loadingPrvider.setErrorMessage(false);
+                                    // Get instance of AuthService using get_it
+                                    AuthSignUpService authService =
+                                        GetIt.I.get<AuthSignUpService>();
+                                    // Call the signUpWithEmailPassword method
+                                    String? error =
+                                        await authService.signUpWithEmailPassword(
+                                      email_textEditingController.text,
+                                      pw_textEditingController.text,
                                     );
-                                  } else {
-                                    Future.delayed(Duration(seconds: 2), () {
+                                    // Handle the sign-up result
+                                    if (error == null) {
+                                      print('aaaa');
+                                      saveUserDataToSharedPreferences();
+                                      await Future.delayed(Duration(seconds: 2));
                                       loadingPrvider.setLoading(false);
-                                      loadingPrvider.setErrorMessage(true);
-                                    });
-                                    print('signUp failed: $error');
+                                      loadingPrvider.setEmail(
+                                          email_textEditingController.text);
+                                      String phone = "+91${phn_textEditingController.text}";
+                                      print('eeeeeeeeeeee${phone}');
+                                      //storing the data into the firebase
+                                      try {
+                                        print('[[[[[[[');
+                                        await firebaseService.addUserToFirestore(
+                                            name: name_textEditingController.text,
+                                            email:
+                                                email_textEditingController.text,
+                                            phone: phone,
+                                            password:
+                                                pw_textEditingController.text,
+                                            gender: userSelectedGender,
+                                            image: '',
+                                            caste: 'Not available',
+                                            country: 'Not available',
+                                            dob: 'Not available',
+                                            education: 'Not available',
+                                            hgt: 'Not available',
+                                            location: 'Not available',
+                                            pincode: 'Not available',
+                                            religion: 'Not available',
+                                            state: 'Not available',
+                                            wgt: 'Not available',
+                                          age: 'Not available',
+                                          siblings: 'Not available',
+                                            description: 'Not available',
+                                            fathername: 'Not available',
+                                            mothername: 'Not available',
+                                            job: 'Not available',
+                                            createdTime: DateTime.now()
+                                        );
+
+                                        try {
+                                          QuerySnapshot querySnapshot =
+                                              await FirebaseFirestore.instance.collection('users')
+                                                  .where('email',
+                                                      isEqualTo:
+                                                          email_textEditingController
+                                                              .text)
+                                                  .get();
+
+                                          if (querySnapshot.docs.isNotEmpty) {
+                                            print(
+                                                'SSSSSSSSSS${querySnapshot.docs.first.id}');
+                                            loadingPrvider.setUserId(
+                                                querySnapshot.docs.first.id);
+
+                                            await FirebaseFirestore.instance
+                                                .collection('users')
+                                                .doc(loadingPrvider.UserId)
+                                                .update({
+                                              'user_id': loadingPrvider.UserId
+                                            });
+
+                                            SharedPreferences prefs =
+                                                await SharedPreferences
+                                                    .getInstance();
+
+                                            // Save user data to shared preferences
+                                            prefs.setString(
+                                                'user_id', loadingPrvider.UserId);
+                                          } else {
+                                            print('EMPTY'); // User not found
+                                          }
+                                        } catch (e) {
+                                          print('Error fetching user ID: $e');
+                                          return null;
+                                        }
+                                        //
+                                        // FirebaseServices _firebase_services = GetIt.I.get<FirebaseServices>();
+                                        // final user_data = await _firebase_services.getUserDataByEmail(email_textEditingController.text);
+                                        // loadingPrvider.setUserId(user_data.)
+                                      } catch (e) {
+                                        print('Exception : $e');
+                                      }
+
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              // Additional_details(user_id:  loadingPrvider.UserId)
+                                              GreetingPage(
+                                            name: name_textEditingController.text,
+                                            email:
+                                                email_textEditingController.text,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      Future.delayed(Duration(seconds: 2), () {
+                                        loadingPrvider.setLoading(false);
+                                        loadingPrvider.setErrorMessage(true);
+                                      });
+                                      print('signUp failed: $error');
+                                    }
+
                                   }
+
+
+                                  // loadingPrvider.setErrorMessage(false);
+                                  // // Get instance of AuthService using get_it
+                                  // AuthSignUpService authService =
+                                  //     GetIt.I.get<AuthSignUpService>();
+                                  // // Call the signUpWithEmailPassword method
+                                  // String? error =
+                                  //     await authService.signUpWithEmailPassword(
+                                  //   email_textEditingController.text,
+                                  //   pw_textEditingController.text,
+                                  // );
+                                  // // Handle the sign-up result
+                                  // if (error == null) {
+                                  //   print('aaaa');
+                                  //   saveUserDataToSharedPreferences();
+                                  //   await Future.delayed(Duration(seconds: 2));
+                                  //   loadingPrvider.setLoading(false);
+                                  //   loadingPrvider.setEmail(
+                                  //       email_textEditingController.text);
+                                  //   String phone =
+                                  //       "+91${phn_textEditingController.text}";
+                                  //
+                                  //
+                                  //
+                                  //   //storing the data into the firebase
+                                  //   try {
+                                  //     await firebaseService.addUserToFirestore(
+                                  //         name: name_textEditingController.text,
+                                  //         email:
+                                  //             email_textEditingController.text,
+                                  //         phone: phone,
+                                  //         password:
+                                  //             pw_textEditingController.text,
+                                  //         gender: userSelectedGender,
+                                  //         image: '',
+                                  //         caste: '',
+                                  //         country: '',
+                                  //         dob: '',
+                                  //         education: '',
+                                  //         hgt: '',
+                                  //         location: '',
+                                  //         pincode: '',
+                                  //         religion: '',
+                                  //         state: '',
+                                  //         wgt: '');
+                                  //
+                                  //     try {
+                                  //       QuerySnapshot querySnapshot =
+                                  //           await FirebaseFirestore.instance
+                                  //               .collection('users')
+                                  //               .where('email',
+                                  //                   isEqualTo:
+                                  //                       email_textEditingController
+                                  //                           .text)
+                                  //               .get();
+                                  //
+                                  //       if (querySnapshot.docs.isNotEmpty) {
+                                  //         print(
+                                  //             'SSSSSSSSSS${querySnapshot.docs.first.id}');
+                                  //         loadingPrvider.setUserId(
+                                  //             querySnapshot.docs.first.id);
+                                  //
+                                  //         await FirebaseFirestore.instance
+                                  //             .collection('users')
+                                  //             .doc(loadingPrvider.UserId)
+                                  //             .update({
+                                  //           'user_id': loadingPrvider.UserId
+                                  //         });
+                                  //
+                                  //         SharedPreferences prefs =
+                                  //             await SharedPreferences
+                                  //                 .getInstance();
+                                  //
+                                  //         // Save user data to shared preferences
+                                  //         prefs.setString(
+                                  //             'user_id', loadingPrvider.UserId);
+                                  //       } else {
+                                  //         print('EMPTY'); // User not found
+                                  //       }
+                                  //     } catch (e) {
+                                  //       print('Error fetching user ID: $e');
+                                  //       return null;
+                                  //     }
+                                  //     //
+                                  //     // FirebaseServices _firebase_services = GetIt.I.get<FirebaseServices>();
+                                  //     // final user_data = await _firebase_services.getUserDataByEmail(email_textEditingController.text);
+                                  //     // loadingPrvider.setUserId(user_data.)
+                                  //   } catch (e) {
+                                  //     print('Exception : $e');
+                                  //   }
+                                  //
+                                  //   Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //       builder: (context) => Additional_details(
+                                  //
+                                  //       )
+                                  //       //     GreetingPage(
+                                  //       //   name: name_textEditingController.text,
+                                  //       //   email:
+                                  //       //       email_textEditingController.text,
+                                  //       // ),
+                                  //     ),
+                                  //   );
+                                  // } else {
+                                  //   Future.delayed(Duration(seconds: 2), () {
+                                  //     loadingPrvider.setLoading(false);
+                                  //     loadingPrvider.setErrorMessage(true);
+                                  //   });
+                                  //   print('signUp failed: $error');
+                                  // }
                                 } else {
                                   // Form is invalid
                                   print('Form is invalid');
@@ -283,7 +431,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               isLoading: loadingPrvider.isLoading,
                               fillColor: Colors.purple,
                               borderColor: Colors.purple,
-                              title: 'Sign up',
+                              title: 'Done',
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -303,10 +451,6 @@ class _SignUpPageState extends State<SignUpPage> {
                                     ))
                               ],
                             ),
-
-
-
-
                           ],
                         ),
                       ),
@@ -321,6 +465,29 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
+
+  void myAlert() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            title: Text('Email already exists'),
+            content: Container(
+              height: 55.h,
+              child: ElevatedButton(
+                //if user click this button. user can upload image from camera
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child:Text('Ok'),
+              ),
+            ),
+          );
+        });
+  }
+
   void _clearFileds() {
     email_textEditingController.clear();
     pw_textEditingController.clear();
@@ -328,8 +495,6 @@ class _SignUpPageState extends State<SignUpPage> {
     phn_textEditingController.clear();
     userSelectedGender = 'Select';
   }
-
-
 
   _signUp_text(context) {
     return Row(
@@ -343,24 +508,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  _errorText(context) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 10.w,
-        ),
-        Text(
-          'Please enter this field',
-          style: TextStyle(
-              color: Colors.red[900],
-              fontSize: 12.sp,
-              fontWeight: FontWeight.normal),
-        )
-      ],
-    );
-  }
+
 
   _dropDownGender(context) {
     var genderProvider = Provider.of<AppProvider>(context);
@@ -381,7 +529,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   (userSelectedGender == 'Select' || userSelectedGender == null)
                       ? userSelectedGender
                       : genderProvider.selectedGender,
-              onChanged: (String? newValue) async{
+              onChanged: (String? newValue) async {
                 genderProvider.setGender(newValue!);
                 userSelectedGender = newValue;
                 await saveGender(newValue);
@@ -404,11 +552,9 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Future<void> saveGender(String gender)async{
+  Future<void> saveGender(String gender) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('gender', gender);
-
-
   }
 
   Future<void> saveUserDataToSharedPreferences() async {
@@ -421,14 +567,11 @@ class _SignUpPageState extends State<SignUpPage> {
     prefs.setString('password', pw_textEditingController.text);
     // prefs.setString('user_id', pw_textEditingController.text);
 
-
     // Print shared preferences values
     print('Name: ${prefs.getString('name')}');
     print('Email: ${prefs.getString('email')}');
     print('Phone Number: ${prefs.getString('phone')}');
     print('Password: ${prefs.getString('password')}');
     // print('UserId: ${prefs.getString('user_id')}');
-
-
   }
 }

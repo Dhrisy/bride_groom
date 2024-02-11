@@ -1,9 +1,6 @@
-import 'package:bride_groom/profile/edit_profile/edit_profile_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get_it/get_it.dart';
 
-import '../../services/firebase_services.dart';
 
 class OptionCardWidget extends StatefulWidget {
   const OptionCardWidget({Key? key,
@@ -29,8 +26,6 @@ class OptionCardWidget extends StatefulWidget {
   State<OptionCardWidget> createState() => _OptionCardWidgetState();
 }
 
-
-
 class _OptionCardWidgetState extends State<OptionCardWidget> {
 
   @override
@@ -39,6 +34,10 @@ class _OptionCardWidgetState extends State<OptionCardWidget> {
     print(widget.user_data);
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,9 +81,7 @@ class _OptionCardWidgetState extends State<OptionCardWidget> {
                 ],
               ),
               IconButton(
-                onPressed: (){
-
-                },
+                onPressed: widget.callback,
                 icon: Icon(
                   Icons.arrow_forward_rounded,
                   color: Colors.purple,

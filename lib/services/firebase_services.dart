@@ -1,11 +1,8 @@
-// services/firebase_service.dart
-
-import 'package:bride_groom/authentication/sign_up_page/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
 
-class FirebaseServices {
+class FirebaseServicesWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final userCollection = FirebaseFirestore.instance.collection('users');
 
   Future<void> addUserToFirestore({
     required String name,
@@ -14,7 +11,7 @@ class FirebaseServices {
     required String password,
     required String gender,
     required String dob,
-
+    required String age,
     required String education,
     required String image,
     required String hgt,
@@ -24,16 +21,13 @@ class FirebaseServices {
     required String country,
     required String pincode,
     required String caste,
-
     required String religion,
-
-
-
-
-
-
-
-    // required String time,
+    required DateTime createdTime,
+    required String fathername,
+    required String mothername,
+    required String siblings,
+    required String description,
+    required String job,
   }) async {
     try {
       await _firestore.collection('users').add({
@@ -51,16 +45,15 @@ class FirebaseServices {
         'state': state,
         'country': country,
         'pincode': pincode,
-
-
-
-
-
-
-
-
-
-        // 'created_time': time
+        'age': age,
+        'height':hgt,
+        'weight': wgt,
+        'father_name': fathername,
+        'mother_name': mothername,
+        'siblings': siblings,
+        'create_time': description,
+        'job': job,
+        'description': description
       });
     } catch (e) {
       print('Error adding user to Firestore: $e');
@@ -76,13 +69,9 @@ class FirebaseServices {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        print('pppppppppp');
         print(querySnapshot.docs.first.id);
         var userData = querySnapshot.docs.first.data() as Map<String, dynamic>;
-
-        userData['id'] = querySnapshot.docs.first.id; // Add document ID to the map
-       
-
+        userData['id'] = querySnapshot.docs.first.id; // fetch doc id
         return querySnapshot.docs.first.data() as Map<String, dynamic>;
       } else {
         return null; // User not found
@@ -94,11 +83,9 @@ class FirebaseServices {
   }
 
 
-
   Future<void> updateImage(String user_id) async {
     try {
       await _firestore.collection('users').doc(user_id).update({
-
       });
     } catch (e) {
       print('Error updating user image: $e');
@@ -106,17 +93,12 @@ class FirebaseServices {
     }
   }
 
+
+
+
+
 }
 
-class UpdateImageParams {
-  final String userId;
-  final String name;
-  final Map<String, dynamic> additionalData;
 
-  UpdateImageParams({
-    required this.userId,
-    required this.name,
-    required this.additionalData,
-  });
-}
+
 

@@ -1,57 +1,57 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:get_it/get_it.dart';
 
-import '../services/firebase_services.dart';
+class CustomFunctions {
+  static String toSentenceCase(String input) {
+    if (input.isEmpty) {
+      return input;
+    }
 
-String toSentenceCase(String input) {
-  if (input.isEmpty) {
-    return input;
+    List<String> sentences = input.split('.');
+
+    for (int i = 0; i < sentences.length; i++) {
+      sentences[i] = sentences[i].trim();
+      if (sentences[i].isNotEmpty) {
+        sentences[i] =
+            sentences[i][0].toUpperCase() + sentences[i].substring(1).toLowerCase();
+      }
+    }
+
+    return sentences.join('. ');
   }
 
-  // Split the input into sentences based on periods (.)
-  List<String> sentences = input.split('.');
+  static Future<bool> doesEmailExist(String email) async {
+    try {
+      CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('users');
 
-  // Capitalize the first letter of each sentence
-  for (int i = 0; i < sentences.length; i++) {
-    sentences[i] = sentences[i].trim();
-    if (sentences[i].isNotEmpty) {
-      sentences[i] = sentences[i][0].toUpperCase() + sentences[i].substring(1).toLowerCase();
+      QuerySnapshot querySnapshot = await usersCollection
+          .where('email', isNotEqualTo: email)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print('Error checking email existence: $e');
+      return false;
     }
   }
 
-  // Join the sentences back into a single string
-  return sentences.join('. ');
-}
+  static Future<bool> emailExist(String email) async {
+    try {
+      CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('users');
 
-Future<bool> doesEmailExist(String email) async {
-  try {
-    // Reference to the 'users' collection
-    CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
+      QuerySnapshot querySnapshot = await usersCollection
+          .where('email', isEqualTo: email)
+          .get();
 
-    // Query for the document with the matching email
-    QuerySnapshot querySnapshot = await usersCollection.where('email', isEqualTo: email)
-        .where('email', isNotEqualTo: email).get();
-if(querySnapshot.docs.isNotEmpty){
-  return true;
-}else{
-  return false;
-}
-    // Check if a document with the email exists
-    // return querySnapshot.docs.isNotEmpty;
-  } catch (e) {
-    // Handle any potential errors during the process
-    print('Error checking email existence: $e');
-    return false;
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print('Error checking email existence: $e');
+      return false;
+    }
   }
-}
 
-
-bool? search(
-    String searchFor,
-    String searchIn,
-    ) {
-  print('ddddddd');
-  //return searchIn.contains(searchFor);
-
-  return searchIn.toLowerCase().contains(searchFor.toLowerCase());
+  static bool? search(String searchFor, String searchIn) {
+    return searchIn.toLowerCase().contains(searchFor.toLowerCase());
+  }
 }

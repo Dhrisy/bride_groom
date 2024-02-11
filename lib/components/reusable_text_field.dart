@@ -30,6 +30,13 @@ class ReusabeTextField extends StatefulWidget {
     this.validator,
     this.initialValue,
     this.keyboardType,
+    this.father,
+    this.mother,
+    this.age,
+    this.description,
+    this.siblings,
+    this.job,
+    this.gender,
     required this.onChange,
 
 
@@ -53,11 +60,16 @@ class ReusabeTextField extends StatefulWidget {
   final bool? wgt;
   final bool? education;
   final bool? mother_tongue;
+  final bool? father;
+  final bool? mother;
+  final bool? age;
+  final bool? description;
+  final bool? siblings;
+  final bool? job;
   final TextInputType? keyboardType;
-  final String? initialValue; // Initial value parameter
-
-
+  final String? initialValue;
   final bool? phn;
+  final bool? gender;
   final bool? edit_profile;
   final Map<String, dynamic>? user_data;
   final String? Function(String?)? validator;
@@ -73,11 +85,6 @@ class _ReusabeTextFieldState extends State<ReusabeTextField> {
   @override
   void initState() {
     super.initState();
-    // if (widget.initialValue != null) {
-    //   widget.controller.text = widget.initialValue!;
-    //   print('aaa${widget.controller.text}');
-    //
-    // }
     _initialValue ();
 
   }
@@ -86,58 +93,49 @@ class _ReusabeTextFieldState extends State<ReusabeTextField> {
     print('mmmm');
     if(widget.edit_profile == true){
       if(widget.phn == true){
-        print('a');
-
         widget.controller.text = widget.user_data!['phone'] ?? '';
       }else if(widget.email == true){
-        print('b');
-
         widget.controller.text = widget.user_data!['email'] ?? '';
       }
       else if(widget.religion == true){
-        print('c');
-
         widget.controller.text = widget.user_data!['religion'] ?? '';
       }else if(widget.country == true){
-        print('d');
-
         widget.controller.text = widget.user_data!['country'] ?? '';
       }else if(widget.caste == true){
-        print('e');
-
         widget.controller.text = widget.user_data!['caste'] ?? '';
       }else if(widget.state == true){
-        print('f');
-
         widget.controller.text = widget.user_data!['state'] ?? '';
       }else if(widget.place == true){
-        print('g');
-
         widget.controller.text = widget.user_data!['location'] ?? '';
       }else if(widget.education == true){
-        print('h');
-
         widget.controller.text = widget.user_data!['education'] ?? '';
       }else if(widget.hgt == true){
-        print('i');
-
         widget.controller.text = widget.user_data!['height'] ?? '';
       }else if(widget.wgt == true){
-        print('j');
-
         widget.controller.text = widget.user_data!['weight'] ?? '';
       }else if(widget.language == true){
-        print('k');
-
         widget.controller.text = widget.user_data!['mother_tongue'] ?? '';
       }else if(widget.pincode == true){
-        print('l');
-
         widget.controller.text = widget.user_data!['pincode'] ?? '';
-      }else{
+      }else if(widget.father == true){
+        widget.controller.text = widget.user_data!['father_name'] ?? '';
+      }else if(widget.mother == true){
+        widget.controller.text = widget.user_data!['mother_name'] ?? '';
+      }else if(widget.age == true){
+        widget.controller.text = widget.user_data!['age'] ?? '';
+      }else if(widget.description == true){
+        widget.controller.text = widget.user_data!['about_family'] ?? '';
+      }else if(widget.job == true) {
+        widget.controller.text = widget.user_data!['job'] ?? '';
+      }
+      else if(widget.siblings == true){
+        widget.controller.text = widget.user_data!['siblings'] ?? '';
+      }else if(widget.gender == true){
+        widget.controller.text = widget.user_data!['gender'] ?? '';
+      }
+      else{
         widget.controller.text = widget.user_data!['name'] ?? '';
       }
-
     }
   }
 
@@ -163,7 +161,6 @@ class _ReusabeTextFieldState extends State<ReusabeTextField> {
               ),
             )
                 : SizedBox.shrink()
-
           ],
         ),
         SizedBox(
@@ -173,29 +170,9 @@ class _ReusabeTextFieldState extends State<ReusabeTextField> {
         ? Container(
           width: double.infinity,
           child: TextFormField(
+            readOnly:  widget.email == true && widget.edit_profile == true ? true : false,
             validator: widget.validator,
             onChanged: widget.onChange,
-
-            // {
-            //   if (value == null || value.isEmpty) {
-            //     return 'Please enter this field';
-            //   }else if(widget.password == true){
-            //     if (value.length < 6) {
-            //       return 'Password must be at least 6 characters';
-            //     }
-            //   }else if(widget.email == true){
-            //     final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
-            //     if (!emailRegex.hasMatch(value)) {
-            //       return 'Please enter a valid email address';
-            //     }
-            //
-            //   }else if(widget.phn == true){
-            //     if (value.length < 10) {
-            //       return 'Phome number must be 10 characters';
-            //     }
-            //   }
-            //   return null;
-            // },
             maxLines: null,
             keyboardType: widget.keyboardType,
             controller: widget.controller,
@@ -208,14 +185,9 @@ class _ReusabeTextFieldState extends State<ReusabeTextField> {
               fillColor: Colors.purple.withOpacity(0.1),
               filled: true,
               prefixIcon: widget.icon,
-
-
-
-
             ),
           ),
         )
-
             :   Container(
           height: 55.h,
           width: double.infinity,
@@ -246,28 +218,21 @@ class _ReusabeTextFieldState extends State<ReusabeTextField> {
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(10), // Set the max number of characters to 10
-
                     ],
                     decoration: InputDecoration(
                       hintText: 'Enter phone number',
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
                           borderSide: BorderSide.none),
-
                       fillColor: Colors.transparent,
                       filled: true,
-                      // prefixIcon: Icon(Icons.phone),
-
                     ),
-
                   ),
                 ),
-
               ],
             ),
           ),
         ),
-
       ],
     );
   }

@@ -3,28 +3,41 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 class AppProvider with ChangeNotifier {
-  String _selectedGender = 'Select';
+  String _selectedGender = '';
   String _email = '';
   String _phone = '';
   String _name = '';
   String _gender = '';
   File? _photo;
-  String? _dob; // Nullable DateTime for date of birth
+  String _dob = ''; // Nullable DateTime for date of birth
   String _user_id = '';
+  String _filterOption = '';
+  String _hgt = '';
+  String _wgt = '';
+
+
 
 
   bool _isLoading = false;
+  bool _isFav = false;
+
   bool _errorMessage = false;
   bool _isSearching = false;
   String Searching = '';
   String _search = ''; // Corrected variable name
+  bool _isFilter = false;
+
 
 
 
   String get selectedGender => _selectedGender;
   String get Email => _email;
   String get Search => _search;
-  String get search => _search; // Corrected variable name
+  String get search => _search;
+  String get FilterOption => _filterOption;
+  String get Hgt => _hgt;
+  String get Wgt => _wgt;
+
 
 
   String get Phone => _phone;
@@ -36,10 +49,39 @@ class AppProvider with ChangeNotifier {
 
 
   bool get isLoading => _isLoading;
+  bool get isFav => _isFav;
+
   bool get errorMessage => _errorMessage;
   bool get isSearching => _isSearching;
+  bool get isFilter => _isFilter;
 
 
+  void setHeight(String Hgt) {
+    _hgt = Hgt;
+    notifyListeners();
+  }
+
+  void setWeght(String Wgt) {
+    _wgt = Wgt;
+    notifyListeners();
+  }
+
+
+  void setFilterOption(String FilterOption) {
+    _filterOption = FilterOption;
+    notifyListeners();
+  }
+
+  void setFav(bool isFav) {
+    _isFav = isFav;
+    notifyListeners();
+  }
+
+
+  void setFilter(bool isFilter) {
+    _isFilter = isFilter;
+    notifyListeners();
+  }
 
   void setSearch(String searching) {
     _search = searching;
@@ -102,20 +144,29 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void resetFilter(){
+    _filterOption = '';
+
+  }
+
   void clearData() {
     // Reset or clear all the provider data when logging out
     _photo = null;
     _name = '';
-    _dob = null;
+    _dob = '';
     _email = '';
     _gender = '';
     _phone = '';
     _selectedGender = 'null';
-
-
-
-    // Clear other properties as needed
-
+    _wgt='';
+    _hgt = '';
+    _filterOption = '';
+    _isSearching = false;
+    _errorMessage = false;
+    _isFilter = false;
+    _isLoading = false;
+    _search = '';
+    _user_id = '';
     notifyListeners();
   }
 }

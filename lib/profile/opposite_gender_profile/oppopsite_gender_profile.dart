@@ -1,3 +1,4 @@
+import 'package:bride_groom/custom_functions/custom_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,9 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class OppositeGenderProfile extends StatefulWidget {
    OppositeGenderProfile({Key? key, required this.userData ,
    }) : super(key: key);
-
    final DocumentSnapshot userData;
-
 
    @override
   State<OppositeGenderProfile> createState() => _OppositeGenderProfileState();
@@ -47,19 +46,21 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                           ),
                         ),
                         child: widget.userData['image'] != '' || widget.userData['image'] != null
-                  ? Image.network(widget.userData['image'],
-                          height: 100.h,
-                          width: 100.h,
-                        fit: BoxFit.cover,) : SizedBox.shrink()
+                  ? ClipOval(
+                          child: Image.network(
+                            widget.userData['image'],
+                            height: 100.0,
+                            width: 100.0,
+                            fit: BoxFit.cover,
+                          ),
+                        ): SizedBox.shrink()
                       ),
-
                     ],
                   ),
                   Row(
                     children: [
                       Expanded(
                           child: Column(
-
                             children: [
                               SizedBox(height: 10.h,),
                               Row(
@@ -73,8 +74,6 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                               ),
                               SizedBox(height: 5.h,),
                               _personalDetails(context),
-
-
                               SizedBox(height: 10.h,),
                               Row(
                                 children: [
@@ -98,10 +97,7 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                                 ],
                               ),
                               SizedBox(height: 5.h,),
-
                               _conatctDetailsCard(context),
-
-
                             ],
                           )
                       )
@@ -129,7 +125,6 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: [
-
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,8 +155,8 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                 ),
                 Expanded(
                   child: Text(
-                    widget.userData['date_of_birth'] == '' || widget.userData['date_of_birth'] == null
-                        ? 'Not available': widget.userData['date_of_birth'],
+                    widget.userData['date_of_birth'] == 'Not available' || widget.userData['date_of_birth'] == null
+                        ? 'Not available': CustomFunctions.toSentenceCase(widget.userData['date_of_birth']),
                     style: TextStyle(
                       fontSize: 18,
                     ),
@@ -170,7 +165,6 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
               ],
             ),
             SizedBox(height: 5.h,),
-
             Row(
               children: [
                 Expanded(
@@ -199,8 +193,8 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                 ),
                 Expanded(
                   child: Text(
-                    widget.userData['location'] == '' || widget.userData['location'] == null
-                        ? 'Not available': widget.userData['location'],
+                    widget.userData['location'] == 'Not available' || widget.userData['location'] == null
+                        ? 'Not available': CustomFunctions.toSentenceCase(widget.userData['location']),
                     style: TextStyle(
                       fontSize: 18,
                     ),
@@ -208,10 +202,7 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                 ),
               ],
             ),
-
-
             SizedBox(height: 5.h,),
-
             Row(
               children: [
                 Expanded(
@@ -240,8 +231,8 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                 ),
                 Expanded(
                   child: Text(
-                    widget.userData['education'] == '' || widget.userData['education'] == null
-                        ? 'Not available': widget.userData['education'],
+                    widget.userData['education'] == 'Not available' || widget.userData['education'] == null
+                        ? 'Not available': CustomFunctions.toSentenceCase(widget.userData['education']),
                     style: TextStyle(
                       fontSize: 18,
                     ),
@@ -250,7 +241,6 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
               ],
             ),
             SizedBox(height: 5.h,),
-
             Row(
               children: [
                 Expanded(
@@ -279,7 +269,8 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                 ),
                 Expanded(
                   child: Text(
-                    'job',
+                    widget.userData['job'] == 'Not available' || widget.userData['job'] == null
+                        ? 'Not available': CustomFunctions.toSentenceCase(widget.userData['job']),
                     style: TextStyle(
                       fontSize: 18,
                     ),
@@ -287,12 +278,7 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                 ),
               ],
             )
-
-
-
-
           ],
-
         ),
       ),
     );
@@ -341,7 +327,8 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                 ),
                 Expanded(
                   child: Text(
-                    'name',
+                    widget.userData['father_name'] == 'Not available' || widget.userData['father_name'] == null
+                        ? 'Not available': widget.userData['father_name'],
                     style: TextStyle(
                       fontSize: 18,
                     ),
@@ -379,7 +366,8 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                 ),
                 Expanded(
                   child: Text(
-                    'name',
+                    widget.userData['mother_name'] == 'Not available' || widget.userData['mother_name'] == null
+                        ? 'Not available': widget.userData['mother_name'],
                     style: TextStyle(
                       fontSize: 18,
                     ),
@@ -417,7 +405,8 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                 ),
                 Expanded(
                   child: Text(
-                    '1 brother',
+                    widget.userData['siblings'] == 'Not available' || widget.userData['siblings'] == null
+                        ? 'Not available': widget.userData['siblings'],
                     style: TextStyle(
                       fontSize: 18,
                     ),
@@ -453,7 +442,8 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                 ),
                 Expanded(
                   child: Text(
-                    '.....',
+                    widget.userData['description'] == 'Not available' || widget.userData['description'] == null
+                        ? 'Not available': widget.userData['description'],
                     style: TextStyle(
                       fontSize: 18,
                     ),
@@ -485,14 +475,7 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: [
-            // Row(
-            //   children: [
-            //     Text('Contact details',
-            //     style: TextStyle(
-            //
-            //     ),)
-            //   ],
-            // ),
+
             Row(
               children: [
                 Expanded(
@@ -611,7 +594,7 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                     children: [
                       Expanded(
                         child: Text(
-                          'Address',
+                          'Place',
                           style: TextStyle(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.w500
@@ -630,35 +613,100 @@ class _OppositeGenderProfileState extends State<OppositeGenderProfile> {
                     ),
                   ),
                 ),
-                // if((widget.userData['location'] == '' && widget.userData['location'] == null)
-                //     ||(widget.userData['state'] == '' && widget.userData['date_of_birth'] == null)||
-                //     (widget.userData['country'] == '' && widget.userData['coutry'] == null)
-                // )
-                // Expanded(child: Text(
-                //   'Not available',
-                //   style: TextStyle(
-                //     fontSize: 18,
-                //   ),
-                // ),),
-                // if((widget.userData['location'] != '' || widget.userData['location'] != null)
-                //     ||(widget.userData['state'] != '' || widget.userData['date_of_birth'] != null)||
-                //     (widget.userData['country'] != '' || widget.userData['coutry'] != null)
-                // )
+
                 Expanded(
                   child: Text(
-                    (widget.userData['location'] == '' && widget.userData['location'] == null)
-                        ||(widget.userData['state'] == '' && widget.userData['date_of_birth'] == null)||
-                        (widget.userData['country'] == '' && widget.userData['coutry'] == null)
+                    (widget.userData['location'] == 'Not available')
                     ? 'Not available'
-
-                   :'${widget.userData['location']}, ${widget.userData['state']}, ${widget.userData['country']} ',
+                   :'${widget.userData['location']}',
                     style: TextStyle(
                       fontSize: 18,
                     ),
                   ),
                 ),
               ],
-            )
+            ),
+            Row(
+              children: [
+                Expanded(
+
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'State',
+                          style: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w500
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    ':',
+                    style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w500
+                    ),
+                  ),
+                ),
+
+                Expanded(
+                  child: Text(
+                    (widget.userData['state'] == 'Not available')
+                        ? 'Not available'
+                        :'${widget.userData['state']}',
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Country',
+                          style: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w500
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    ':',
+                    style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w500
+                    ),
+                  ),
+                ),
+
+                Expanded(
+                  child: Text(
+                    (widget.userData['country'] == 'Not available')
+                        ? 'Not available'
+                        :'${widget.userData['country']}',
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+
 
 
 
