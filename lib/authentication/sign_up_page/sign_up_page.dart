@@ -490,6 +490,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   LoginPage()));
+                                      loadingPrvider.setErrorMessage(false);
+                                      loadingPrvider.setLoading(false);
                                     },
                                     child: const Text(
                                       "Sign In",

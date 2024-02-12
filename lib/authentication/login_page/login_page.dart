@@ -157,6 +157,8 @@ void initState() {
                                       ),
                                     ),
                                   );
+
+                                  provider.setErrorMessage(false);
                                 } else {
                                   print('invalid');
                                   Future.delayed(Duration(seconds: 2), () {
@@ -336,19 +338,22 @@ _errorText(context) {
 }
 
 _signup(context) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      const Text("Dont have an account? "),
-      TextButton(
-          onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => SignUpPage()));
-          },
-          child: const Text(
-            "Sign Up",
-            style: TextStyle(color: Colors.purple),
-          ))
-    ],
-  );
+  return Consumer<AppProvider>(builder: (context, provider, child){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text("Dont have an account? "),
+        TextButton(
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => SignUpPage()));
+              provider.setErrorMessage(false);
+            },
+            child: const Text(
+              "Sign Up",
+              style: TextStyle(color: Colors.purple),
+            ))
+      ],
+    );
+  });
 }
