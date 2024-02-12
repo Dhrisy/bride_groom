@@ -30,6 +30,7 @@ class AppProvider with ChangeNotifier {
 
 
 
+
   String get selectedGender => _selectedGender;
   String get Email => _email;
   String get Search => _search;

@@ -31,6 +31,9 @@ class AuthSignUpService {
 class AuthSignInService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+
+
+  // function to login
   Future<String?> signInWithEmailPassword(String email, String password) async {
     try {
       if (email != null && password != null) {
@@ -38,16 +41,15 @@ class AuthSignInService {
           email: email ?? '',
           password: password,
         );
-        print('ooooo');
+        return null;
         // The sign-in was successful
-        // You can add further logic here
       } else {
         print('Email or password is null');
-        // Handle the case where email or password is null
+        return 'invalid';
       }
     } catch (e) {
       print('Error signing in: $e');
-      // Handle the error
+      return 'invalid';
     }
   }
 }

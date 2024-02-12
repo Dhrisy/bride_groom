@@ -113,6 +113,7 @@ void initState() {
                                 );
 
                                 if (error == null) {
+                                  print('valid');
                                   user_data = await _firebase_services
                                       .getUserDataByEmail(emailController.text);
                                   provider.setEmail(emailController.text);
@@ -140,6 +141,7 @@ void initState() {
                                     ),
                                   );
                                 } else {
+                                  print('invalid');
                                   Future.delayed(Duration(seconds: 2), () {
                                     provider.setLoading(false);
                                     provider.setErrorMessage(true);
