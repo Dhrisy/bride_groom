@@ -71,6 +71,18 @@ void initState() {
                           icon: Icon(Icons.email),
                           text: 'Email',
                           email: true,
+                          validator: (val){
+                            if (emailController.text.isEmpty ||
+                                emailController.text == '') {
+                              return 'Please enter this field';
+                            } else {
+                              final emailRegex = RegExp(
+                                  r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+                              if (!emailRegex.hasMatch(val!)) {
+                                return 'Please enter a valid email address';
+                              }
+                            }
+                          },
                         ),
                         SizedBox(
                           height: 10.h,
@@ -83,6 +95,11 @@ void initState() {
                           icon: Icon(Icons.lock),
                           text: 'Password',
                           password: true,
+                          validator: (val){
+                            if(pwController.text.length < 6){
+                              return 'Password must be contain atleast 6 number';
+                            }
+                          },
                         ),
                         SizedBox(
                           height: 15.h,
