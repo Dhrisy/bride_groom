@@ -247,7 +247,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                       FocusScope.of(context).unfocus();
                       Navigator.pop(context);
 
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileWidget(
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(
                         userId: widget.user_data!['user_id'],
                         user_data: widget.user_data,
                       )));
@@ -284,295 +284,299 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
         return true;
       },
       child: GestureDetector(
-          child: Consumer<AppProvider>(builder: (context, Provider, child) {
-        return Scaffold(
+          child: Scaffold(
           appBar: AppBar(
             leading: InkWell(
                 onTap: () {
                   noSavingAlert();
                 },
                 child: Icon(Icons.arrow_back_outlined)),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Profile',
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w500,
+            title: Consumer<AppProvider>(builder: (context, provider, child){
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Profile',
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-                InkWell(
-                  onTap: () async {
-                    if (_formKey.currentState!.validate()) {
-                      print('form valid');
-                      if (widget.user_data!['name'] !=
-                          edit_email_textEditingController) {
+                  InkWell(
+                    onTap: () async {
+                      if (_formKey.currentState!.validate()) {
+                        print('form valid');
+                        if (widget.user_data!['name'] !=
+                            edit_email_textEditingController) {
 
-                        // function to chek exists the email
-                        bool res = await CustomFunctions.doesEmailExist(edit_email_textEditingController.text);
-                        if (res == true && edit_email_textEditingController.text != widget.user_data!['email']) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: Colors.transparent,
-                              elevation: 0,
-                              content: Container(
-                                  width: double.infinity,
-                                  height: 60.h,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20.r)),
-                                    border: Border.all(
-                                      color: Colors
-                                          .purple, // Set the border color here
-                                      width: 2.0, // Set the border width
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                        width: 10.w,
+                          // function to chek exists the email
+                          bool res = await CustomFunctions.doesEmailExist(edit_email_textEditingController.text);
+                          if (res == true && edit_email_textEditingController.text != widget.user_data!['email']) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
+                                content: Container(
+                                    width: double.infinity,
+                                    height: 60.h,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius:
+                                      BorderRadius.all(Radius.circular(20.r)),
+                                      border: Border.all(
+                                        color: Colors
+                                            .purple, // Set the border color here
+                                        width: 2.0, // Set the border width
                                       ),
-                                      Expanded(
-                                          child: Text(
-                                        'Email already exists',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: Colors.green, fontSize: 14.sp),
-                                      )),
-                                    ],
-                                  )),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        } else {
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: 10.w,
+                                        ),
+                                        Expanded(
+                                            child: Text(
+                                              'Email already exists',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  color: Colors.green, fontSize: 14.sp),
+                                            )),
+                                      ],
+                                    )),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          } else {
 
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                          var _gender = prefs.getString('gender');
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            var _gender = prefs.getString('gender');
 
-                          // edited data is updated int users collection
-                          final userEditedData = {
-                            'name': widget.user_data!['name'] ==
-                                    edit_name_textEditingController.text
-                                ? widget.user_data!['name']
-                                : edit_name_textEditingController.text,
-                            'email': widget.user_data!['email'] ==
-                                    edit_email_textEditingController.text
-                                ? widget.user_data!['email']
-                                : edit_email_textEditingController.text,
-                            'phone': widget.user_data!['phone'] ==
-                                    edit_phn_textEditingController.text
-                                ? widget.user_data!['phone']
-                                : edit_phn_textEditingController.text,
-                            'gender': _gender != '' && (_gender == widget.user_data!['gender']) ? widget.user_data!['gender']
-                                : _gender == '' && (_gender != widget.user_data!['gender'])? widget.user_data!['gender']
-                                :_gender != '' ? _gender : widget.user_data!['gender'],
-                            'date_of_birth':
-                                widget.user_data!['date_of_birth'] == Provider.dob
-                                    ? widget.user_data!['date_of_birth']
-                                    : Provider.dob,
-                            'mother_tongue': widget.user_data!['mother_tongue'] ==
-                                    edit_mother_tongue_textEditingController.text
-                                ? widget.user_data!['mother_tongue']
-                                : edit_mother_tongue_textEditingController.text,
-                            'religion': widget.user_data!['religion'] ==
-                                    edit_religio_textEditingController.text
-                                ? widget.user_data!['religion']
-                                : edit_religio_textEditingController.text,
-                            'caste': widget.user_data!['caste'] ==
-                                    edit_caste_textEditingController.text
-                                ? widget.user_data!['caste']
-                                : edit_caste_textEditingController.text,
-                            'location': widget.user_data!['location'] ==
-                                    edit_address_textEditingController.text
-                                ? widget.user_data!['location']
-                                : edit_address_textEditingController.text,
-                            'pincode': widget.user_data!['pincode'] ==
-                                    edit_pincode_textEditingController.text
-                                ? widget.user_data!['pincode']
-                                : edit_pincode_textEditingController.text,
-                            'state': widget.user_data!['state'] ==
-                                    edit_state_textEditingController.text
-                                ? widget.user_data!['state']
-                                : edit_state_textEditingController.text,
-                            'country': widget.user_data!['country'] ==
-                                    edit_country_textEditingController.text
-                                ? widget.user_data!['country']
-                                : edit_country_textEditingController.text,
-                            'height': widget.user_data!['height'] ==
-                                    Provider.Hgt
-                                ? widget.user_data!['height']
-                                : Provider.Hgt,
-                            'weight': widget.user_data!['weight'] ==
-                                Provider.Wgt
-                                ? widget.user_data!['weight']
-                                : Provider.Wgt,
-                            'education': widget.user_data!['education'] ==
-                                    edit_edu_textEditingController.text
-                                ? widget.user_data!['education']
-                                : edit_edu_textEditingController.text,
-                            "father_name": widget.user_data!['father_name'] ==
-                                edit_father_textEditingController.text
-                                ? widget.user_data!['father_name']
-                                : edit_father_textEditingController.text,
-                            'mother_name': widget.user_data!['mother_name'] ==
-                                edit_mother_textEditingController.text
-                                ? widget.user_data!['mother_name']
-                                : edit_mother_textEditingController.text,
-                            'siblings': widget.user_data!['siblings'] ==
-                                edit_sibling_textEditingController.text
-                                ? widget.user_data!['siblings']
-                                : edit_sibling_textEditingController.text,
-                            'family_description': widget.user_data!['family_description'] ==
-                                edit_desc_textEditingController.text
-                                ? widget.user_data!['family_description']
-                                : edit_desc_textEditingController.text,
-                            'job': widget.user_data!['job'] ==
-                                edit_job_textEditingController.text
-                                ? widget.user_data!['job']
-                                : edit_job_textEditingController.text,
-                            'age': widget.user_data!['age'] ==
-                                edit_age_textEditingController.text
-                                ? widget.user_data!['age']
-                                : edit_age_textEditingController.text,
-                            // 'image': widget.user_data!['image'] ==
-                            //         edit_edu_textEditingController.text
-                            //     ? widget.user_data!['image']
-                            //     : Provider.Photo!.path,
-                          };
-                          _firestore
-                              .doc(widget.user_data!['user_id'])
-                              .update(userEditedData)
-                              .then((value) {
-                            showSnackbar(context);
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(
-                              user_data: widget.user_data,
-                              userId: widget.user_data!['user)id'],)));
-                            // Navigator.pop(context);
-                          });
+                            // edited data is updated int users collection
+                            final userEditedData = {
+                              'name': widget.user_data!['name'] ==
+                                  edit_name_textEditingController.text
+                                  ? widget.user_data!['name']
+                                  : edit_name_textEditingController.text,
+                              'email': widget.user_data!['email'] ==
+                                  edit_email_textEditingController.text
+                                  ? widget.user_data!['email']
+                                  : edit_email_textEditingController.text,
+                              'phone': widget.user_data!['phone'] ==
+                                  edit_phn_textEditingController.text
+                                  ? widget.user_data!['phone']
+                                  : edit_phn_textEditingController.text,
+                              'gender': _gender != 'Select' && (_gender == widget.user_data!['gender']) ? widget.user_data!['gender']
+                                  : _gender == 'Select' && (_gender != widget.user_data!['gender'])? widget.user_data!['gender']
+                                  :_gender != 'Select' ? _gender : widget.user_data!['gender'],
+                              'date_of_birth':
+                              widget.user_data!['date_of_birth'] == provider.dob
+                                  ? widget.user_data!['date_of_birth']
+                                  : provider.dob,
+                              'mother_tongue': widget.user_data!['mother_tongue'] ==
+                                  edit_mother_tongue_textEditingController.text
+                                  ? widget.user_data!['mother_tongue']
+                                  : edit_mother_tongue_textEditingController.text,
+                              'religion': widget.user_data!['religion'] ==
+                                  edit_religio_textEditingController.text
+                                  ? widget.user_data!['religion']
+                                  : edit_religio_textEditingController.text,
+                              'caste': widget.user_data!['caste'] ==
+                                  edit_caste_textEditingController.text
+                                  ? widget.user_data!['caste']
+                                  : edit_caste_textEditingController.text,
+                              'location': widget.user_data!['location'] ==
+                                  edit_address_textEditingController.text
+                                  ? widget.user_data!['location']
+                                  : edit_address_textEditingController.text,
+                              'pincode': widget.user_data!['pincode'] ==
+                                  edit_pincode_textEditingController.text
+                                  ? widget.user_data!['pincode']
+                                  : edit_pincode_textEditingController.text,
+                              'state': widget.user_data!['state'] ==
+                                  edit_state_textEditingController.text
+                                  ? widget.user_data!['state']
+                                  : edit_state_textEditingController.text,
+                              'country': widget.user_data!['country'] ==
+                                  edit_country_textEditingController.text
+                                  ? widget.user_data!['country']
+                                  : edit_country_textEditingController.text,
+                              'height': widget.user_data!['height'] ==
+                                  provider.Hgt
+                                  ? widget.user_data!['height']
+                                  : provider.Hgt,
+                              'weight': widget.user_data!['weight'] ==
+                                  provider.Wgt
+                                  ? widget.user_data!['weight']
+                                  : provider.Wgt,
+                              'education': widget.user_data!['education'] ==
+                                  edit_edu_textEditingController.text
+                                  ? widget.user_data!['education']
+                                  : edit_edu_textEditingController.text,
+                              "father_name": widget.user_data!['father_name'] ==
+                                  edit_father_textEditingController.text
+                                  ? widget.user_data!['father_name']
+                                  : edit_father_textEditingController.text,
+                              'mother_name': widget.user_data!['mother_name'] ==
+                                  edit_mother_textEditingController.text
+                                  ? widget.user_data!['mother_name']
+                                  : edit_mother_textEditingController.text,
+                              'siblings': widget.user_data!['siblings'] ==
+                                  edit_sibling_textEditingController.text
+                                  ? widget.user_data!['siblings']
+                                  : edit_sibling_textEditingController.text,
+                              'family_description': widget.user_data!['family_description'] ==
+                                  edit_desc_textEditingController.text
+                                  ? widget.user_data!['family_description']
+                                  : edit_desc_textEditingController.text,
+                              'job': widget.user_data!['job'] ==
+                                  edit_job_textEditingController.text
+                                  ? widget.user_data!['job']
+                                  : edit_job_textEditingController.text,
+                              'age': widget.user_data!['age'] ==
+                                  edit_age_textEditingController.text
+                                  ? widget.user_data!['age']
+                                  : edit_age_textEditingController.text,
+                              // 'image': widget.user_data!['image'] ==
+                              //         edit_edu_textEditingController.text
+                              //     ? widget.user_data!['image']
+                              //     : Provider.Photo!.path,
+                            };
+                            _firestore
+                                .doc(widget.user_data!['user_id'])
+                                .update(userEditedData)
+                                .then((value) {
+                              showSnackbar(context);
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(
+                                user_data: widget.user_data,
+                                userId: widget.user_data!['user)id'],)));
+                              // Navigator.pop(context);
+                            });
+                          }
                         }
+                      } else {
+                        print('invalid');
                       }
-                    } else {
-                      print('invalid');
-                    }
 
-                  },
-                  child: Container(
-                    height: 40.h,
-                    width: 40.h,
-                    decoration: BoxDecoration(
-                        color: Colors.purple.withOpacity(0.1),
-                        shape: BoxShape.circle),
-                    child: Icon(Icons.done),
-                  ),
-                )
-              ],
-            ),
+                    },
+                    child: Container(
+                      height: 40.h,
+                      width: 40.h,
+                      decoration: BoxDecoration(
+                          color: Colors.purple.withOpacity(0.1),
+                          shape: BoxShape.circle),
+                      child: Icon(Icons.done),
+                    ),
+                  )
+                ],
+              );
+            },)
           ),
           key: _scaffoldKey,
           body: SafeArea(
-            child: SingleChildScrollView(
-              child: Container(
-                height: MediaQuery.of(context).size.height - 50,
-                width: double.infinity,
-                child: Form(
-                  key: _formKey,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 15.w,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(width: 20.w,),
-                            Expanded(
-                              child: Text('Complete the following details to make your profile visible to others',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.purple
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 20.w,),
-
-                          ],
-                        ),
-                        SizedBox(
-                          height: 15.h,
-                        ),
-                        Provider.Photo == '' || Provider.Photo == null
-                            ? Container(
-                                height: 100.h,
-                                width: 100.h,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                    image: AssetImage(
-                                        'assets/images/default_profile.jpg'), // Add your image path
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              )
-                            : Container(
-                                height: 100.h,
-                                width: 100.h,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                    image: FileImage(File(Provider.Photo!.path)),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                        InkWell(
-                            onTap: () {
-                              myAlert();
-                            },
-                            child: Text('Edit picture',
-                            style: TextStyle(
-                              color: Colors.purple
-                            ),)),
-                        SizedBox(
-                          height: 5.h,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
+            child: Consumer<AppProvider>(builder: (contex, Provider, child){
+              return SingleChildScrollView(
+                child: Container(
+                  height: MediaQuery.of(context).size.height - 50,
+                  width: double.infinity,
+                  child: Form(
+                    key: _formKey,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 15.w,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox(
-                                height: 7.h,
+                              SizedBox(width: 20.w,),
+                              Expanded(
+                                child: Text('Complete the following details to make your profile visible to others',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Colors.purple
+                                  ),
+                                ),
                               ),
-                              _basicInfo(context),
-                              _personalDetailsCard(context),
-                              SizedBox(
-                                width: 5.w,
-                              ),
-                              _locationCard(context),
-                              _physicalAttribute(context),
-                              _educationInfo(context),
-                              SizedBox(
-                                height: 50.h,
-                              ),
+                              SizedBox(width: 20.w,),
+
                             ],
                           ),
-                        ),
-                      ],
+                          SizedBox(
+                            height: 15.h,
+                          ),
+                          Provider.Photo == '' || Provider.Photo == null
+                              ? Container(
+                            height: 100.h,
+                            width: 100.h,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: AssetImage(
+                                    'assets/images/default_profile.jpg'), // Add your image path
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          )
+                              : Container(
+                            height: 100.h,
+                            width: 100.h,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: FileImage(File(Provider.Photo!.path)),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                              onTap: () {
+                                myAlert();
+                              },
+                              child: Text('Edit picture',
+                                style: TextStyle(
+                                    color: Colors.purple
+                                ),)),
+                          SizedBox(
+                            height: 5.h,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  height: 7.h,
+                                ),
+                                _basicInfo(context),
+                                _personalDetailsCard(context),
+                                SizedBox(
+                                  width: 5.w,
+                                ),
+                                _locationCard(context),
+                                _physicalAttribute(context),
+                                _educationInfo(context),
+                                SizedBox(
+                                  height: 50.h,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
+              );
+            },)
           ),
-        );
-      })),
+        )
+
+      ),
     );
   }
 
@@ -1139,7 +1143,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             // ),
 
 
-            _heightDropDown(context),
+            // _heightDropDown(context),
+            DropDownHeight(context),
             SizedBox(
               height: 7.h,
             ),
@@ -1167,9 +1172,14 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
 
 
 
-  _heightDropDown(BuildContext context) {
+  _heightDropDown(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
     return Consumer<AppProvider>(builder: (context, provider, child) {
       print('lllllll${provider.Hgt}');
+      String heightValue = 'Select';
+
+      String _height = prefs.getString('height').toString();
       String value = 'Select';
       return Container(
         height: 63.h,
@@ -1190,9 +1200,77 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                       Expanded(
                         child: DropdownButton<String>(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          value: provider.Hgt.isNotEmpty && (provider.Hgt == widget.user_data!['height']) ? widget.user_data!['height']
-                              : provider.Hgt.isEmpty && (provider.Hgt != widget.user_data!['height'])? widget.user_data!['height']
-                              :provider.Hgt.isNotEmpty ? provider.Hgt : widget.user_data!['height'],
+                          value: provider.Hgt.isNotEmpty ? provider.Hgt
+                              : heightValue,
+                           onChanged: (String? newValue) async {
+                            provider.setHeight(newValue!);
+                            print('${provider.Hgt}mmmmmmm');
+                            prefs.setString('height', newValue);
+                          },
+                          icon: Icon(Icons.arrow_drop_down),
+                          underline: Container(),
+                          isExpanded: true,
+                          items: <String>['Select','Short', 'Average', 'Tall']
+                              .map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          })
+                              .toSet()
+                              .toList(),
+
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Row(
+                  children: [
+                    Text('Height'),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  DropDownHeight(BuildContext context) {
+    return Consumer<AppProvider>(builder: (context, provider, child) {
+      String heightValue = 'Select';
+      return Container(
+        height: 63.h,
+        child: Stack(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  height: 55.h,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                    color: Colors.purple.withOpacity(0.1),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButton<String>(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          value: provider.Hgt.isNotEmpty ? provider.Hgt
+                              : heightValue,
                           onChanged: (String? newValue) async {
                             provider.setHeight(newValue!);
                             print('${provider.Hgt}mmmmmmm');
@@ -1226,7 +1304,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                 ),
                 child: Row(
                   children: [
-                    Text('Height'),
+                    Text('Weight'),
                   ],
                 ),
               ),

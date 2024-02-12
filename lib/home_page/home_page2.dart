@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../custom_functions/custom_functions.dart';
 import '../profile/opposite_gender_profile/oppopsite_gender_profile.dart';
 import '../profile/profile_widget.dart';
@@ -41,11 +42,13 @@ class _HomePageState extends State<HomePage> {
 
 
   Future<void> fetchData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.getString('user_id');
 
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .where('user_id', isEqualTo: widget.userId)
+          .where('user_id', isEqualTo: prefs.getString('user_id'))
           .get();
 
       print('Documents from Firestore: ${querySnapshot.docs}');
@@ -76,10 +79,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(builder: (context, provider, child) {
+      print('oooooo${widget.userId}');
       return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('users')
-              .where('user_id', isNotEqualTo: widget.userId)
+              .where('user_id', isNotEqualTo: _userId)
               .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {

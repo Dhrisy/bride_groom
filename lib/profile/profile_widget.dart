@@ -69,7 +69,7 @@ class _ProfileWidgetState extends State<ProfileWidget>
       setState(() {
         fetch_data = userData;
       });
-      print('User data: $userData,   ${fetch_data}');
+      print('User_data: $userData,   ${fetch_data}');
     } else {
       print('User not found');
     }
@@ -78,57 +78,60 @@ class _ProfileWidgetState extends State<ProfileWidget>
   @override
   void initState() {
     super.initState();
-    print('ddddddd${widget.user_data},  ${widget.userId}');
+    print('${widget.user_data},  ${widget.userId}');
     fetch();
-    fetchData();
+    // fetchData();
     tabBarController = TabController(
       vsync: this,
       length: 2,
     );
   }
 
-  Future<void> fetchData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.getString('user_id');
-    user_id = prefs.getString('user_id');
-
-    if(user_id == null || user_id == ''){
-      print('USER ID NULL');
-    }else{
-      print('USER not null');
-    }
-    try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .where('user_id', isEqualTo: widget.userId)
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        // Data is available
-        var userData = querySnapshot.docs.first.data();
-        setState(() {
-          fetch_data = userData as Map<String, dynamic>?;
-        });
-        print('User Data: $userData,  $fetch_data');
-      } else {
-        // No data found
-        print('No user data found');
-      }
-    } catch (error) {
-      // Handle error
-      print('Error fetching user data: $error');
-    }
-  }
+  // Future<void> fetchData() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   prefs.getString('user_id');
+  //   user_id = prefs.getString('user_id');
+  //
+  //   if(user_id == null || user_id == ''){
+  //     print('USER ID NULL');
+  //   }else{
+  //     print('USER not null');
+  //   }
+  //   try {
+  //     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .where('user_id', isEqualTo: widget.userId)
+  //         .get();
+  //
+  //     if (querySnapshot.docs.isNotEmpty) {
+  //       // Data is available
+  //       var userData = querySnapshot.docs.first.data();
+  //       setState(() {
+  //         fetch_data = userData as Map<String, dynamic>?;
+  //       });
+  //       print('User Data: $userData,  $fetch_data');
+  //     } else {
+  //       // No data found
+  //       print('No user data found');
+  //     }
+  //   } catch (error) {
+  //     // Handle error
+  //     print('Error fetching user data: $error');
+  //   }
+  // }
 
 
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
+        stream: fetch_data != null
+            ? FirebaseFirestore.instance
             .collection('users')
-            .where('user_id', isEqualTo: widget.userId)
-            .snapshots(),
+            .where('user_id', isEqualTo: fetch_data!['user_id'])
+            .limit(1)
+            .snapshots()
+            : null,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Center(
@@ -142,32 +145,36 @@ class _ProfileWidgetState extends State<ProfileWidget>
             );
           }
 
-          // Access the data
-          QuerySnapshot querySnapshot = snapshot.data!;
-          List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+          Map<String, dynamic>? userData = snapshot.data!.docs.first.data() as Map<String, dynamic>;
+          print('snapshot:   ${userData},');
 
-          //access data from  documents
-          for (QueryDocumentSnapshot document in documents) {
-            Map<String, dynamic>? userData = document.data() as Map<String, dynamic>;
-            // fetching each field
-            print(userData['name']);
-            print(userData['email']);
-          }
-          QueryDocumentSnapshot document = documents.first;
-          Map<String, dynamic> userData = document.data() as Map<String, dynamic>;
-          print('snapshot ${userData}');
+
+
+          // // Access the data
+          // QuerySnapshot querySnapshot = snapshot.data!;
+          // List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+          //
+          // //access data from  documents
+          // for (QueryDocumentSnapshot document in documents) {
+          //   Map<String, dynamic>? userData = document.data() as Map<String, dynamic>;
+          //   // fetching each field
+          //   print(userData['name']);
+          //   print(userData['email']);
+          // }
+          // QueryDocumentSnapshot document = documents.first;
+          // Map<String, dynamic> userData = document.data() as Map<String, dynamic>;
+          // print('snapshot ${userData}');
 
           return WillPopScope(
             onWillPop: () async {
-              // Navigator.pop(context);
               Navigator.pop(context);
-
-              // Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+              // Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage( )));
               return true; // allow back navigation
             },
             child: SafeArea(
               child: Scaffold(
                 appBar: AppBar(
+
                   title: Text(
                     'User profile',
                     style: TextStyle(

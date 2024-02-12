@@ -35,6 +35,8 @@ class _VerifiedCredentialState extends State<VerifiedCredential>
     FirebaseServicesWidget _firebase_services = GetIt.I.get<FirebaseServicesWidget>();
     user_data = await _firebase_services.getUserDataByEmail(widget.email);
     print('nnnnnnn${user_data}');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('user_id', user_data!['user_id']);
   }
 
   @override
@@ -67,6 +69,7 @@ class _VerifiedCredentialState extends State<VerifiedCredential>
                 user_data: user_data,
               ),
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                print('${user_data},   ${user_data!['user_id']}');
                 var curve = Curves.fastOutSlowIn;
 
                 return FadeTransition(
